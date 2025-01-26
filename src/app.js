@@ -1,6 +1,4 @@
-const accountSid = 'ACd6280537e5470ce84bcfba881ffc0903';
-const authToken = '7b8f224bfcabfc27694f988cd3a1e181';
-const client = require('twilio')(accountSid, authToken);
+
 let favicon = require( 'serve-favicon' );
 var conn = require('./connection');
 let express = require( 'express' );
@@ -24,10 +22,16 @@ let stream = require( './ws/stream' );
 const randomstring = require('randomstring');
 const mongoose = require("mongoose");
 const multer = require('multer');
+<<<<<<< HEAD
 
 const serverPort = 5001;
 // const chat = require('./assets/js/chat.js')
 const serverURL = "http://localhost:5001/home";
+=======
+// const serverPort = 5000;
+// const serverURL = "http://localhost:5000/home";
+
+>>>>>>> 31f8b45 (Git Commit)
 const { PDFDocument, rgb } = require('pdf-lib');
 const { register } = require('module');
 
