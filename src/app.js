@@ -24,9 +24,9 @@ let stream = require( './ws/stream' );
 const randomstring = require('randomstring');
 const mongoose = require("mongoose");
 const multer = require('multer');
-const serverPort = 5000;
+const serverPort = 5001;
 // const chat = require('./assets/js/chat.js')
-const serverURL = "http://localhost:5000/home";
+const serverURL = "http://localhost:5001/home";
 const { PDFDocument, rgb } = require('pdf-lib');
 const { register } = require('module');
 
