@@ -1,6 +1,6 @@
 
 let favicon = require( 'serve-favicon' );
-var conn = require('./connection');
+
 let express = require( 'express' );
 let session = require('express-session')
 let expressFileupload = require('express-fileupload');
