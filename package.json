@@ -32,11 +32,11 @@
     "serve-favicon": "^2.5.0",
     "sharp": "^0.33.5",
     "socket.io": "*",
-<<<<<<< HEAD
+
     "twilio": "^5.4.2",
-=======
+
     "twilio": "^5.3.5",
->>>>>>> d5ce767 (first commit)
+
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
