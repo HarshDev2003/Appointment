@@ -88,10 +88,10 @@ app.use(bodyParser.json());
 
 
 const conn = mysql.createConnection({
-    host: 'sql307.infinityfree.com',
-    user: 'if0_38183213',
-    password: 'NI3hmsnuOXy',
-    database: 'if0_38183213_XXX',
+    host: 'sql12.freesqldatabase.com',
+    user: 'sql12760527',
+    password: '73Pdmt4u4I',
+    database: 'sql12760527',
     multipleStatements: true
 });
 conn.connect(function(error){
