@@ -142,6 +142,44 @@
       background-color: #007bff;
       color: white;
     }
+
+    .time-slot {
+  display: inline-block;
+  padding: 10px 15px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  background-color: #f8f9fa;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.time-slot:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.time-slot.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Styling for unavailable slots */
+.time-slot.unavailable {
+  background-color: #d9534f !important;
+  color: white !important;
+  cursor: not-allowed;
+  pointer-events: none; /* Prevent any interactions */
+}
+
+/* Prevent hover effects for unavailable slots */
+.time-slot.unavailable:hover {
+  cursor: not-allowed;
+  background-color: #d9534f !important;
+  color: white !important;
+}
+
   </style>
 </head>
 <body>
@@ -551,6 +589,30 @@ document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
       console.error('Error:', error);
       alert('An error occurred while saving the booking.');
     });
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const timeSlots = document.querySelectorAll(".time-slot");
+  const timeInput = document.getElementById("time");
+
+  timeSlots.forEach((slot) => {
+    slot.addEventListener("click", function () {
+      // Check if the slot is unavailable
+      if (slot.classList.contains("unavailable")) {
+        return; // Prevent selection
+      }
+
+      // Remove selected class from all slots
+      timeSlots.forEach((s) => s.classList.remove("selected"));
+
+      // Add selected class to clicked slot
+      slot.classList.add("selected");
+
+      // Update hidden input field with selected time
+      timeInput.value = slot.getAttribute("data-time");
+    });
+  });
 });
 
 
