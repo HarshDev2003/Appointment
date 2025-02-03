@@ -1,6 +1,6 @@
+require('dotenv').config();
 
 let favicon = require( 'serve-favicon' );
-
 let express = require( 'express' );
 let session = require('express-session')
 let expressFileupload = require('express-fileupload');
@@ -24,9 +24,8 @@ const mongoose = require("mongoose");
 const multer = require('multer');
 
 
-const serverPort = 5001;
-// const chat = require('./assets/js/chat.js')
-const serverURL = "http://localhost:5001/home";
+const serverPort = process.env.SERVER_PORT || 5005;
+const serverURL = process.env.SERVER_URL || `http://localhost:${process.env.SERVER_PORT}/home`;
 
 // const serverPort = 5000;
 // const serverURL = "http://localhost:5000/home";
@@ -59,20 +58,11 @@ app.use(express.urlencoded({
   extended: false
 }));
 
-app.use(session({
-  secret: 'secret',
-  resave: true,
-  saveUninitialized: true
-}));
-
-
-
-// My 
 // Set up session middleware
 app.use(session({
-    secret: 'secret',
-    resave: false,
-    saveUninitialized: true
+  secret: process.env.SESSION_SECRET || 'defaultsecret',
+  resave: false,
+  saveUninitialized: true
 }));
 
 // Set up bodyParser middleware
@@ -82,18 +72,15 @@ app.use(bodyParser.json());
 // -------------------------------------------------------------------------------
 
 
-
-
-
-
-
+// Database Connection
 const conn = mysql.createConnection({
-    host: 'sql12.freesqldatabase.com',
-    user: 'sql12760527',
-    password: '73Pdmt4u4I',
-    database: 'sql12760527',
-    multipleStatements: true
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  multipleStatements: true
 });
+
 conn.connect(function(error){
     if(error)
     {
