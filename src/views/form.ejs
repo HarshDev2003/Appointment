@@ -418,46 +418,11 @@
         link.click();
       });
 
-      // On confirming submission
-      // $('#confirmSubmitBtn').click(function() {
-      //   // Submit the form after confirmation
-      //   $('#bookingForm').submit();
-      // });
     });
    
-//     $(document).ready(function() {
-//   $.ajax({
-//     url: '/api/bookings', // The endpoint to fetch doctors data
-//     method: 'GET',
-//     success: function(data) {
-//       const bookingDropdown = $('#booking');
-//       bookingDropdown.empty(); // Clear any existing options
-
-//       // Ensure there's data returned
-//       if (data && data.length > 0) {
-//         // First, add a default "Select a Doctor" option
-//         bookingDropdown.append('<option value="">Select a Doctor</option>');
-
-//         // Populate the dropdown with doctors' data
-//         data.forEach(function(item) {
-//           // Assuming 'item.id' is the doctor id and 'item.doctor_name' is the doctor's name
-//           bookingDropdown.append(`<option value="${item.id}">${item.doctor_name}</option>`);
-//         });
-//       } else {
-//         // If no doctors are available, show a default message
-  //       bookingDropdown.append('<option value="">No Doctors Available</option>');
-  //     }
-  //   },
-  //   error: function(err) {
-  //     console.error('Error fetching bookings:', err);
-  //     $('#booking').html('<option value="">Error loading bookings</option>');
-  //   }
-  // });
-
-//   // Set the minimum date for the date picker to today's date
   const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
   document.getElementById('date').setAttribute('min', today);
-// });
+
 
     document.addEventListener('DOMContentLoaded', () => {
   const timeSlots = document.querySelectorAll('.time-slot');

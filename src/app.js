@@ -22,7 +22,7 @@ let stream = require( './ws/stream' );
 const randomstring = require('randomstring');
 const mongoose = require("mongoose");
 const multer = require('multer');
-
+const moment = require('moment')
 
 const serverPort = process.env.SERVER_PORT || 5005;
 const serverURL = process.env.SERVER_URL || `http://localhost:${process.env.SERVER_PORT}/home`;
@@ -49,7 +49,7 @@ app.use('/img', express.static(__dirname + '/img')); // redirect to img
 app.use('/images', express.static(__dirname + '/public/images')); // redirect to img
 // app.use('/images', express.static('__dirname + '/public/images'));;
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
-
+app.use('/uploads', express.static('uploads')); // Serve uploaded files
 
 
 app.use(flash());
@@ -72,6 +72,29 @@ app.use(bodyParser.json());
 // -------------------------------------------------------------------------------
 
 
+
+
+// Set up storage for Multer
+const storage = multer.diskStorage({
+  destination: 'uploads/videos/',
+  filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const upload = multer({ storage });
+
+
+
+
+
+
+
+
+
+
+
+
 // Database Connection
 const conn = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -90,6 +113,16 @@ conn.connect(function(error){
         console.log("Connected To Database")
     }
 });
+
+
+
+
+
+
+
+
+
+
 
 app.get('/home/pdf/:id/list', (req, res) => {
   if (req.session.loggedin) {
@@ -608,61 +641,61 @@ app.get('/register-doctor', (req, res) => {
   res.render('dr-register'); // Render the EJS file
 });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Ensure uploads directory exists
-    const uploadDir = './uploads';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir); // Create the directory if it doesn't exist
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // e.g., 1633348976543.jpg
-  }
-});
-const upload = multer({ storage: storage });
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     // Ensure uploads directory exists
+//     const uploadDir = './uploads';
+//     if (!fs.existsSync(uploadDir)) {
+//       fs.mkdirSync(uploadDir); // Create the directory if it doesn't exist
+//     }
+//     cb(null, uploadDir);
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + path.extname(file.originalname)); // e.g., 1633348976543.jpg
+//   }
+// });
+// const upload = multer({ storage: storage });
 
 // POST route to handle form submission
-app.post('/register-doctor', upload.single('img_profile'), (req, res) => {
-  const {
-    name,
-    username,
-    password,
-    sex,
-    age,
-    address,
-    email,
-    phone,
-    specialization,
-    role,
-    education,
-  } = req.body;
+// app.post('/register-doctor', upload.single('img_profile'), (req, res) => {
+//   const {
+//     name,
+//     username,
+//     password,
+//     sex,
+//     age,
+//     address,
+//     email,
+//     phone,
+//     specialization,
+//     role,
+//     education,
+//   } = req.body;
 
-  const img_profile = req.file ? req.file.filename : null; // Handle file upload
+//   const img_profile = req.file ? req.file.filename : null; 
 
-  const last_online = new Date(); // Set the current date and time for last online
-  const information = 1; // Assuming this field is a static value for sorting or descending order
+//   const last_online = new Date(); 
+//   const information = 1; 
 
   // Correct SQL query with proper syntax for parameterized query
-  const query = `INSERT INTO cn_user (
-    name, username, password, img_profile, last_online, information, 
-    sex, age, address, email, phone, specialization, role, education
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+//   const query = `INSERT INTO cn_user (
+//     name, username, password, img_profile, last_online, information, 
+//     sex, age, address, email, phone, specialization, role, education
+//   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-  const values = [
-    name, username, password, img_profile, last_online, information,
-    sex, age, address, email, phone, specialization, role, education
-  ];
+//   const values = [
+//     name, username, password, img_profile, last_online, information,
+//     sex, age, address, email, phone, specialization, role, education
+//   ];
 
-  conn.query(query, values, (err, result) => {
-    if (err) {
-      console.error('Error inserting data:', err);
-      return res.status(500).send('Error registering doctor.');
-    }
-    res.status(200).send('Doctor registered successfully!');
-  });
-});
+//   conn.query(query, values, (err, result) => {
+//     if (err) {
+//       console.error('Error inserting data:', err);
+//       return res.status(500).send('Error registering doctor.');
+//     }
+//     res.status(200).send('Doctor registered successfully!');
+//   });
+// });
 
 
   app.post('/signup', (req, res) => {
@@ -1567,6 +1600,75 @@ app.post("/save-slots", (req, res) => {
   // Respond to the client
   res.json({ success: true, message: "Time slots saved successfully!" });
 });
+
+
+
+
+// ===================Multer===============================
+
+// const storage1 = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//       cb(null, 'uploads/videos/'); // Save videos to the 'uploads' folder
+//   },
+//   filename: (req, file, cb) => {
+//       const uniqueName = `${req.body.user}-${moment().unix()}-record.webm`;
+//       cb(null, uniqueName);
+//   }
+// });
+
+// const upload1 = multer({ storage1 });
+
+
+
+
+app.post('/upload', upload.single('video'), (req, res) => {
+  if (!req.file) return res.json({ success: false, message: 'No file uploaded' });
+
+  const { user } = req.body;
+  const filePath = `/uploads/videos/${req.file.filename}`;
+
+  conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [user, filePath], (err) => {
+      if (err) return res.json({ success: false, message: 'Database error' });
+      res.json({ success: true, filePath });
+  });
+});
+app.get('/videos', (req, res) => {
+  const sql = 'SELECT * FROM videos ORDER BY uploaded_at DESC';
+  
+  conn.query(sql, (err, results) => {
+      if (err) {
+          console.error('Database error:', err);
+          return res.status(500).send('Database error');
+      }
+
+      res.render('videos', { videos: results });
+  });
+});
+
+
+
+// app.post('/upload', upload1.single('video'), (req, res) => {
+//   if (!req.file) {
+//       return res.json({ success: false, message: 'No file uploaded' });
+//   }
+
+//   const user = req.body.user;
+//   const filePath = `/uploads/videos/${req.file.filename}`; // Save path to database
+
+//   // Store file reference in MySQL
+//   const sql = 'INSERT INTO videos (user, file_path) VALUES (?, ?)';
+//   conn.query(sql, [user, filePath], (err, result) => {
+//       if (err) {
+//           console.error('Database error:', err);
+//           return res.json({ success: false, message: 'Database error' });
+//       }
+//       res.json({ success: true, filePath });
+//   });
+// });
+
+
+// ====================Multer=================================
+
 
 
 io.of( '/stream' ).on( 'connection', stream );

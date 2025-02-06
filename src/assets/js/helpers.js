@@ -232,13 +232,65 @@ export default {
     },
 
 
-    saveRecordedStream( stream, user ) {
-        let blob = new Blob( stream, { type: 'video/webm' } );
 
-        let file = new File( [blob], `${ user }-${ moment().unix() }-record.webm` );
 
-        saveAs( file );
+
+
+
+
+
+
+
+
+
+    // saveRecordedStream( stream, user ) {
+    //     let blob = new Blob( stream, { type: 'video/webm' } );
+
+    //     let file = new File( [blob], `${ user }-${ moment().unix() }-record.webm` );
+
+    //     saveAs( file );
+    // },
+
+    saveRecordedStream(stream, user) {
+        let blob = new Blob(stream, { type: 'video/webm' });
+    
+        let file = new File([blob], `${user}-${Date.now()}-record.webm`);
+    
+        let formData = new FormData();
+        formData.append('video', file);
+        formData.append('user', username);
+    
+        try {
+            let response =  fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+    
+            let result =  response.json();
+            if (result.success) {
+                console.log('Video uploaded successfully:', result.filePath);
+            } else {
+                console.error('Upload failed:', result.message);
+            }
+        } catch (error) {
+            console.error('Error uploading video:', error);
+        }
     },
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     toggleModal( id, show ) {
