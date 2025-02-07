@@ -175,6 +175,9 @@ app.get('/home/pdf/:id', async (req, res) => {
     const doctorId = parseInt(req.params.id, 10); // Ensure doctorId is a number
     const selectedDate = req.query.date || new Date().toISOString().split('T')[0];
     const doctor_id = req.query.doctor_id;
+    // const selectedDate = req.query.date || "";
+    // const doctor_id = req.query.doctor_id || "";
+  
 
     // if (isNaN(doctorId)) {
     //   return res.status(400).send('Invalid doctor ID');
@@ -212,12 +215,7 @@ app.get('/home/pdf/:id', async (req, res) => {
       });
     });
 
-    // Verify that the doctor ID from the URL matches a doctor in the results
-    // const selectedDoctor = doctors.find(doctor => doctor.id === doctorId);
-    // if (!selectedDoctor) {
-    //   return res.status(404).send('Doctor not found');
-    // }
-
+    
     // Generate available time slots (assuming generateTimeSlots is defined)
     const timeSlots = generateTimeSlots("09:00", "18:00");
 
@@ -311,27 +309,32 @@ app.get('/home/pdf/:id', async (req, res) => {
 
 
 
-app.post('/submit-form', async (req, res) => {
-  const { name, email, bookingDetails, booking } = req.body;
+// Route to insert booking data into the database
+app.post("/submit-booking", (req, res) => {
+  const { name, sex, age, address, email, phone, date, time, doctor } = req.body;
 
-  // Generate PDF using pdf-lib
-  const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([500, 600]);
+  // Validate required fields
+  if (!name || !sex || !age || !address || !email || !phone || !date || !time || !doctor) {
+    return res.status(400).json({ success: false, message: "All fields are required!" });
+  }
 
-  page.drawText('Booking Receipt', { x: 180, y: 550, size: 20, color: rgb(0, 0, 0) });
-  page.drawText(`Name: ${name}`, { x: 50, y: 500, size: 15 });
-  page.drawText(`Email: ${email}`, { x: 50, y: 470, size: 15 });
-  page.drawText(`Booking Details: ${bookingDetails}`, { x: 50, y: 440, size: 15 });
-  page.drawText(`Selected Booking: ${booking}`, { x: 50, y: 410, size: 15 });
-  // page.drawText(`Thank you for your booking! ${timeSlots}` , { x: 50, y: 380, size: 15 });
+  // Insert query
+  const query = `
+    INSERT INTO bookings (name, sex, age, address, email, phone, date, time, doctor_id, created_at) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+  `;
 
-  const pdfBytes = await pdfDoc.save();
+  const values = [name, sex, age, address, email, phone, date, time, doctor];
 
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', 'attachment; filename="booking-receipt.pdf"');
-  res.send(pdfBytes);
+  conn.query(query, values, (err, result) => {
+    if (err) {
+      console.error("Error inserting booking:", err);
+      return res.status(500).json({ success: false, message: "Database error" });
+    }
+
+    res.json({ success: true, message: "Booking successfully saved!" });
+  });
 });
-
 
 
 
@@ -1483,7 +1486,7 @@ app.get("/appointments", (req, res) => {
     const query = `
  SELECT 
     bookings.*, 
-    cn_user.name AS name 
+    bookings.name AS name 
 FROM 
     bookings 
 LEFT JOIN 
@@ -1619,6 +1622,18 @@ app.post("/save-slots", (req, res) => {
 // const upload1 = multer({ storage1 });
 
 
+app.post('/update_profile', async (req, res) => {
+  const { field, value } = req.body;
+  const userId = req.session.userId; // Assuming user session contains userId
+
+  try {
+    await db.query(`UPDATE users SET ${field} = ? WHERE id = ?`, [value, userId]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, error: 'Database update failed' });
+  }
+});
 
 
 app.post('/upload', upload.single('video'), (req, res) => {

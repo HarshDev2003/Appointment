@@ -35,12 +35,6 @@
       text-transform: uppercase;
     }
 
-
-
-
-
-
-
 /*  */
     .time-slot {
   cursor: pointer;
@@ -64,12 +58,6 @@
   font-weight: bold;
 }
 /*  */
-
-
-
-
-
-
 
 .time-slot:hover,
 .time-slot.active {
@@ -180,13 +168,21 @@
   color: white !important;
 }
 
+
   </style>
 </head>
 <body>
   <div class="container mt-5">
-    <h2>Booking Form</h2>
+    <!-- <h2>Booking Form </h2> -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <button onclick="window.location.href = '/list'" style="padding: 5px 10px; background-color: #ddd; color: #333; border: none; border-radius: 5px; cursor: pointer;">
+        ← Back
+      </button>
+      <center><h2 style="margin: 0;">Book Your Consultant</h2></center>
+    </div>
+    
 
-    <form action="/home/pdf/:id" method="GET" class="mt-4">
+    <!-- <form action="/home/pdf/:id" method="GET" class="mt-4">
       <div class="mb-3">
         <label for="date" class="form-label">Select Date:</label>
         <input type="date" id="date" name="date" class="form-control" value="<%= selectedDate %>" onchange="this.form.submit()" required>
@@ -200,10 +196,37 @@
           <option value="4" <%= doctor_id == 4 ? 'selected' : '' %>>Doctor 4</option>
         </select>
       </div>
+    </form> -->
+
+    <form action="/home/pdf/:id" method="GET" class="mt-4">
+      <div class="mb-3">
+        <label for="date" class="form-label">Select Date:</label>
+        <input type="date" id="date" name="date" class="form-control" value="<%= selectedDate %>" onchange="this.form.submit()" required>
+      </div>
+    
+      <div class="mb-3">
+        <div class="form-group">
+        <label for="doctor_id" class="form-label">Select Doctor:</label>
+      </div>
+        <select id="doctor_id" name="doctor_id" class="form-control" onchange="this.form.submit()" required>
+          <% doctors.forEach(doctor => { %>
+            <option value="<%= doctor.id %>" <%= doctor_id == doctor.id ? 'selected' : '' %>>
+              <%= doctor.doctor_name %>
+            </option>
+          <% }); %>
+        </select>
+      
+      </div>
     </form>
+    
+    
+
+
+
+
+
 
     <form id="bookingForm" action="/submit-booking" method="POST">
-
       <div class="form-group">
         <label for="name">Name</label>
         <input
@@ -270,7 +293,7 @@
       </div>
 
       <input type="hidden" id="date" name="date" value="<%= selectedDate %>">
-      <input type="hidden" id="doctor_id" name="doctor_id" value="<%= doctor_id %>">
+   
       <div class="mb-3">
         <label class="form-label">Select Time Slot:</label>
         <div id="timeSlots" class="d-flex flex-wrap">
@@ -287,14 +310,7 @@
         </div>
         <input type="hidden" id="time" name="time" required>
       </div>
-    
-
-   
-      
-      
-      
-     
-      
+ 
       <button type="button" class="btn btn-primary" id="previewBtn">Preview</button>
     </form>
   </div>
@@ -345,34 +361,39 @@
       });
     });
     $(document).ready(function() {
-      // On clicking the Preview button
+
+
       $('#previewBtn').click(function() {
-        // Get form data
-        const name = $('#name').val();
-        const sex = $('#sex').val();
-        const age = $('#age').val();
-        const address = $('#address').val();
-        const email = $('#email').val();
-        const phone = $('#phone').val();
-        const date = $('#date').val();
-        const time = $('#selectedTimeSlot').val();
+  // Get form values from the input fields
+  const name = $('#name').val();
+  const sex = $('#sex').val();
+  const age = $('#age').val();
+  const address = $('#address').val();
+  const email = $('#email').val();
+  const phone = $('#phone').val();
+  const date = $('#date').val();
+  
+  // Get the selected time from the hidden input (updated when a time slot is clicked)
+  const time = $('#time').val();
+  
+  // Get the selected doctor's name from the <select> with id "doctor_id"
+  const doctor = $('#doctor_id option:selected').text();
 
-        const booking = $('#booking option:selected').text(); // Get the selected doctor's name
+  // Populate the preview modal fields with the collected data
+  $('#previewName').text(name);
+  $('#previewSex').text(sex);
+  $('#previewAge').text(age);
+  $('#previewAddress').text(address);
+  $('#previewEmail').text(email);
+  $('#previewPhone').text(phone);
+  $('#previewDate').text(date);
+  $('#previewTime').text(time);
+  $('#previewBooking').text(doctor);
 
-        // Populate the preview modal with the form data
-        $('#previewName').text(name);
-        $('#previewSex').text(sex);
-        $('#previewAge').text(age);
-        $('#previewAddress').text(address);
-        $('#previewEmail').text(email);
-        $('#previewPhone').text(phone);
-        $('#previewDate').text(date);
-        $('#previewTime').text(time);
-        $('#previewBooking').text(booking);
+  // Show the preview modal
+  $('#previewModal').modal('show');
+});
 
-        // Show the preview modal
-        $('#previewModal').modal('show');
-      });
 
       // On downloading the preview as PDF
       $('#downloadPreviewBtn').click(async function() {
@@ -421,39 +442,26 @@
     });
    
   const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-  document.getElementById('date').setAttribute('min', today);
 
 
-    document.addEventListener('DOMContentLoaded', () => {
-  const timeSlots = document.querySelectorAll('.time-slot');
-  const bookingForm = document.getElementById('bookingForm');
 
-  let selectedTimeSlot = null;
-
-//   // Add event listener to each time slot
+  document.addEventListener('DOMContentLoaded', function () {
+  const timeSlots = document.querySelectorAll('.time-slot:not(.unavailable)');
+  const timeInput = document.getElementById('time');
+  
   timeSlots.forEach(slot => {
     slot.addEventListener('click', () => {
-      // Remove 'active' class from previously selected slot
-      if (selectedTimeSlot) {
-        selectedTimeSlot.classList.remove('active');
-      }
-
-      // Mark the clicked slot as active
-      slot.classList.add('active');
-      selectedTimeSlot = slot;
-
-      // Ensure the selected time slot value is updated in the form
-      let hiddenInput = document.querySelector('input[name="timeSlot"]');
-      if (!hiddenInput) {
-        hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'timeSlot';
-        bookingForm.appendChild(hiddenInput);
-      }
-      hiddenInput.value = slot.textContent.trim();
+      // Remove "selected" from all time slots
+      timeSlots.forEach(s => s.classList.remove('selected'));
+      // Mark the clicked slot as selected
+      slot.classList.add('selected');
+      // Update the hidden input value with the selected time (from data-time attribute)
+      timeInput.value = slot.dataset.time;
     });
   });
 });
+
+// });
 
 document.addEventListener("DOMContentLoaded", function () {
     const timeSlots = document.querySelectorAll(".time-slot");
@@ -518,41 +526,40 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
+document.getElementById("confirmSubmitBtn").addEventListener("click", () => {
   // Collect data from the preview modal
   const formData = {
-    name: document.getElementById('previewName').textContent,
-    sex: document.getElementById('previewSex').textContent,
-    age: document.getElementById('previewAge').textContent,
-    address: document.getElementById('previewAddress').textContent,
-    email: document.getElementById('previewEmail').textContent,
-    phone: document.getElementById('previewPhone').textContent,
-    date: document.getElementById('previewDate').textContent,
-    time: document.getElementById('previewTime').textContent,
-    doctor: document.getElementById('previewBooking').textContent,
+    name: document.getElementById("previewName").textContent.trim(),
+    sex: document.getElementById("previewSex").textContent.trim(),
+    age: document.getElementById("previewAge").textContent.trim(),
+    address: document.getElementById("previewAddress").textContent.trim(),
+    email: document.getElementById("previewEmail").textContent.trim(),
+    phone: document.getElementById("previewPhone").textContent.trim(),
+    date: document.getElementById("previewDate").textContent.trim(),
+    time: document.getElementById("previewTime").textContent.trim(),
+    doctor: document.getElementById("previewBooking").textContent.trim(),
   };
 
   // Send data to the backend using Fetch API
-  fetch('/submit-booking', {
-    method: 'POST',
+  fetch("/submit-booking", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(formData),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        alert('Booking successfully saved!');
-        // Optionally redirect to a success page
-        window.location.href = '/success';
+        alert("Booking successfully saved!");
+        window.location.href = "/success";
       } else {
-        alert('Failed to save booking: ' + data.message);
+        alert("Failed to save booking: " + data.message);
       }
     })
     .catch((error) => {
-      console.error('Error:', error);
-      alert('An error occurred while saving the booking.');
+      console.error("Error:", error);
+      alert("An error occurred while saving the booking.");
     });
 });
 
