@@ -198,7 +198,7 @@
       </div>
     </form> -->
 
-    <form action="/home/pdf/:id" method="GET" class="mt-4">
+    <form action="/home/pdf" method="GET" class="mt-4">
       <div class="mb-3">
         <label for="date" class="form-label">Select Date:</label>
         <input type="date" id="date" name="date" class="form-control" value="<%= selectedDate %>" onchange="this.form.submit()" required>
@@ -208,14 +208,18 @@
         <div class="form-group">
         <label for="doctor_id" class="form-label">Select Doctor:</label>
       </div>
-        <select id="doctor_id" name="doctor_id" class="form-control" onchange="this.form.submit()" required>
-          <% doctors.forEach(doctor => { %>
-            <option value="<%= doctor.id %>" <%= doctor_id == doctor.id ? 'selected' : '' %>>
-              <%= doctor.doctor_name %>
-            </option>
-          <% }); %>
-        </select>
+      <select id="doctor_id" name="doctor_id" class="form-control" onchange="this.form.submit()" required>
+        <% doctors.forEach(doctor => { %>
+          <option value="<%= doctor.id %>" <%= doctor_id == doctor.id ? 'selected' : '' %>>
+            <%= doctor.doctor_name %>
+          </option>
+        <% }); %>
+      </select>
       
+      </div>
+      <div class="mb-3">
+        <label for="selected_doctor_id" class="form-label">Doctor ID:</label>
+        <input type="text" id="selectedDoctorID" class="form-control" value="<%= doctor_id %>" readonly>
       </div>
     </form>
     
@@ -293,6 +297,11 @@
       </div>
 
       <input type="hidden" id="date" name="date" value="<%= selectedDate %>">
+      <div class="mb-3">
+        <label for="selected_doctor_id" class="form-label">Doctor ID:</label>
+        <input type="text" id="selectedDoctorID" class="form-control" value="<%= doctor_id %>" readonly>
+      </div>
+      <!-- <input type="hidden" id="selectedDoctorID" name="doctor_id"> -->
    
       <div class="mb-3">
         <label class="form-label">Select Time Slot:</label>
@@ -335,6 +344,7 @@
           <p><strong>Selected Date:</strong> <span id="previewDate"></span></p>
           <p><strong>Selected Time:</strong> <span id="previewTime"></span></p>
           <p><strong>Selected Doctor:</strong> <span id="previewBooking"></span></p>
+          <!-- <p><strong>Selected Doctor ID:</strong> <span id="doctor_id"></span></p> -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button>
@@ -352,7 +362,48 @@
   <script>
     const timeSlots = document.querySelectorAll('.time-slot:not(.unavailable)');
     const timeInput = document.getElementById('time');
-  
+    const doctor_id= document.getElementById('doctor_id')
+    
+    document.getElementById("confirmSubmitBtn").addEventListener("click", () => {
+  // Collect data from the preview modal
+  const formData = {
+    name: document.getElementById("previewName").textContent.trim(),
+    sex: document.getElementById("previewSex").textContent.trim(),
+    age: document.getElementById("previewAge").textContent.trim(),
+    address: document.getElementById("previewAddress").textContent.trim(),
+    email: document.getElementById("previewEmail").textContent.trim(),
+    phone: document.getElementById("previewPhone").textContent.trim(),
+    date: document.getElementById("previewDate").textContent.trim(),
+    time: document.getElementById("previewTime").textContent.trim(),
+    doctor: document.getElementById("previewBooking").textContent.trim(),
+    doctor_id: document.getElementById("selectedDoctorID").value.trim(),
+
+    
+  };
+
+  // Send data to the backend using Fetch API
+  fetch("/submit-booking", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Booking successfully saved!");
+        window.location.href = "/success";
+      } else {
+        alert("Failed to save booking: " + data.message);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("An error occurred while saving the booking.");
+    });
+});
+
     timeSlots.forEach(slot => {
       slot.addEventListener('click', () => {
         timeSlots.forEach(s => s.classList.remove('selected')); // Remove "selected" from all slots
@@ -372,13 +423,12 @@
   const email = $('#email').val();
   const phone = $('#phone').val();
   const date = $('#date').val();
-  
   // Get the selected time from the hidden input (updated when a time slot is clicked)
   const time = $('#time').val();
   
   // Get the selected doctor's name from the <select> with id "doctor_id"
   const doctor = $('#doctor_id option:selected').text();
-
+  const doctor_id = $('#doctor_id').val();
   // Populate the preview modal fields with the collected data
   $('#previewName').text(name);
   $('#previewSex').text(sex);
@@ -389,6 +439,7 @@
   $('#previewDate').text(date);
   $('#previewTime').text(time);
   $('#previewBooking').text(doctor);
+  $('#selectedDoctorID').val(doctor_id);
 
   // Show the preview modal
   $('#previewModal').modal('show');
@@ -407,6 +458,7 @@
         const date = $('#previewDate').text();
         const time = $('#previewTime').text();
         const booking = $('#previewBooking').text();
+        const doctor_id = $('#selectedDoctorID').val();
 
         // Generate PDF using pdf-lib
         const pdfDoc = await PDFLib.PDFDocument.create();
@@ -424,6 +476,7 @@
         page.drawText(`Selected Time: ${time}`, { x: 50, y: 290, size: 15 });
         page.drawText(`Selected Doctor: ${booking}`, { x: 50, y: 260, size: 15 });
         page.drawText(`Selected Time: ${time}`, { x: 50, y: 290, size: 15 });
+        page.drawText(`Selected Doctor Id: ${doctor_id}`, { x: 50, y: 290, size: 15 });
 
 
         // Serialize the PDFDocument to bytes (Uint8Array)
@@ -526,42 +579,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-document.getElementById("confirmSubmitBtn").addEventListener("click", () => {
-  // Collect data from the preview modal
-  const formData = {
-    name: document.getElementById("previewName").textContent.trim(),
-    sex: document.getElementById("previewSex").textContent.trim(),
-    age: document.getElementById("previewAge").textContent.trim(),
-    address: document.getElementById("previewAddress").textContent.trim(),
-    email: document.getElementById("previewEmail").textContent.trim(),
-    phone: document.getElementById("previewPhone").textContent.trim(),
-    date: document.getElementById("previewDate").textContent.trim(),
-    time: document.getElementById("previewTime").textContent.trim(),
-    doctor: document.getElementById("previewBooking").textContent.trim(),
-  };
-
-  // Send data to the backend using Fetch API
-  fetch("/submit-booking", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(formData),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        alert("Booking successfully saved!");
-        window.location.href = "/success";
-      } else {
-        alert("Failed to save booking: " + data.message);
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("An error occurred while saving the booking.");
-    });
-});
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -587,7 +604,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
+function updateDoctorID() {
+    let doctorSelect = document.getElementById('doctorSelect');
+    let doctorIDInput = document.getElementById('selectedDoctorID');
+    doctorIDInput.value = doctorSelect.value; // Updates the Doctor ID field dynamically
+  }
   </script>
 </body>
 </html>

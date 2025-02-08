@@ -163,7 +163,7 @@ app.get('/home/pdf/:id/list', (req, res) => {
 });
 
 
-app.get('/home/pdf/:id', async (req, res) => {
+app.get('/home/pdf', async (req, res) => {
   try {
     // Check if the user is logged in
     if (!req.session.loggedin) {
@@ -175,6 +175,7 @@ app.get('/home/pdf/:id', async (req, res) => {
     const doctorId = parseInt(req.params.id, 10); // Ensure doctorId is a number
     const selectedDate = req.query.date || new Date().toISOString().split('T')[0];
     const doctor_id = req.query.doctor_id;
+    // const { date, doctor_id } = req.query;
     // const selectedDate = req.query.date || "";
     // const doctor_id = req.query.doctor_id || "";
   
@@ -182,7 +183,8 @@ app.get('/home/pdf/:id', async (req, res) => {
     // if (isNaN(doctorId)) {
     //   return res.status(400).send('Invalid doctor ID');
     // }
-
+    // console.log("Selected Date:", date);
+    console.log("Selected Doctor ID:", doctor_id);
     // Queries
     const bookedSlotsQuery = `SELECT time FROM bookings WHERE date = ? AND doctor_id = ?`;
     const doctorQuery = `SELECT id, doctor_name FROM doctor_table`;
@@ -230,7 +232,7 @@ app.get('/home/pdf/:id', async (req, res) => {
       bookedSlots,
     });
   } catch (error) {
-    console.error('Error in /home/pdf/:id route:', error.message);
+    console.error('Error in /home/pdf route:', error.message);
     res.status(500).send('Internal Server Error');
   }
 });
@@ -311,10 +313,13 @@ app.get('/home/pdf/:id', async (req, res) => {
 
 // Route to insert booking data into the database
 app.post("/submit-booking", (req, res) => {
-  const { name, sex, age, address, email, phone, date, time, doctor } = req.body;
-
-  // Validate required fields
-  if (!name || !sex || !age || !address || !email || !phone || !date || !time || !doctor) {
+  const { name, sex, age, address, email, phone, date, time, doctor_id } = req.body;
+  // const doctor_id = req.query.doctor_id;
+  console.log(req.body,req.body.doctor_id, req.body.selectedDoctorId)
+  // console.log("Received doctor_id:", doctor_id); // Debugging log
+  
+  // Corrected validation
+  if (!name || !sex || !age || !address || !email || !phone || !date || !time || !doctor_id) {
     return res.status(400).json({ success: false, message: "All fields are required!" });
   }
 
@@ -324,7 +329,9 @@ app.post("/submit-booking", (req, res) => {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
   `;
 
-  const values = [name, sex, age, address, email, phone, date, time, doctor];
+  const values = [name, sex, age, address, email, phone, date, time, doctor_id];
+
+  console.log("Request Body:", req.body); // Debugging log
 
   conn.query(query, values, (err, result) => {
     if (err) {
@@ -335,6 +342,8 @@ app.post("/submit-booking", (req, res) => {
     res.json({ success: true, message: "Booking successfully saved!" });
   });
 });
+
+
 
 
 
@@ -364,10 +373,10 @@ app.get('/get-time-slots/:doctorId/:date', (req, res) => {
 
 
 app.post('/submit-booking', (req, res) => {
-  const { name, sex, age, address, email, phone, date, time, doctor } = req.body;
+  const { name, sex, age, address, email, phone, date, time, doctor_id } = req.body;
 
   // Validate required fields
-  if (!name || !sex || !age || !address || !email || !phone || !date || !time || !doctor) {
+  if (!name || !sex || !age || !address || !email || !phone || !date || !time || !doctor_id) {
     req.flash('error', 'All fields are required.');
     return res.redirect('/form'); // Redirect back to form
   }
@@ -379,7 +388,7 @@ app.post('/submit-booking', (req, res) => {
     WHERE date = ? AND time = ?
   `;
   const insertQuery = `
-    INSERT INTO bookings (name, sex, age, address, email, phone, date, time, doctor)
+    INSERT INTO bookings (name, sex, age, address, email, phone, date, time, doctor_id)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
@@ -397,7 +406,7 @@ app.post('/submit-booking', (req, res) => {
     }
 
     // If slot is available, insert booking into database
-    conn.query(insertQuery, [name, sex, age, address, email, phone, date, time, doctor], (insertErr) => {
+    conn.query(insertQuery, [name, sex, age, address, email, phone, date, time, doctor_id], (insertErr) => {
       if (insertErr) {
         console.error('Database insert error:', insertErr.message);
         req.flash('error', 'An error occurred while submitting the form.');
