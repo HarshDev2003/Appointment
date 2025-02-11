@@ -415,7 +415,7 @@ app.post('/submit-booking', (req, res) => {
 
       // On success, redirect to success page
       req.flash('success', 'Form submitted successfully!');
-      res.redirect('/success'); // Redirect to a success page
+      res.redirect('/list'); // Redirect to a success page
     });
   });
 });
@@ -667,6 +667,11 @@ app.get('/register-doctor', (req, res) => {
 //   }
 // });
 // const upload = multer({ storage: storage });
+
+
+
+
+
 
 // POST route to handle form submission
 // app.post('/register-doctor', upload.single('img_profile'), (req, res) => {
