@@ -1641,7 +1641,7 @@ app.post('/update_profile', async (req, res) => {
   const userId = req.session.userId; // Assuming user session contains userId
 
   try {
-    await db.query(`UPDATE users SET ${field} = ? WHERE id = ?`, [value, userId]);
+    await conn.query(`UPDATE users SET ${field} = ? WHERE id = ?`, [value, userId]);
     res.json({ success: true });
   } catch (error) {
     console.error(error);
