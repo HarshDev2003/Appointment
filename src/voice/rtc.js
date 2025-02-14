@@ -1,5 +1,5 @@
 import h from './helpers.js';
-console.log("rtc js");
+console.log("voice/rtc js");
 window.addEventListener('load', () => {
     const room = h.getQString(location.href, 'room');
     const username = sessionStorage.getItem('username');

@@ -1,5 +1,5 @@
 import helpers from './helpers.js';
-console.log("events js");
+console.log("voice/events js");
 window.addEventListener( 'load', () => {
     //When the chat icon is clicked
     document.querySelector( '#toggle-chat-pane' ).addEventListener( 'click', ( e ) => {
