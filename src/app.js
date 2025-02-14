@@ -1657,10 +1657,13 @@ app.post('/update_profile', async (req, res) => {
 });
 
 
+
+
 app.post('/upload', upload.single('video'), (req, res) => {
   if (!req.file) return res.json({ success: false, message: 'No file uploaded' });
 
-  const { user } = req.body;
+  const  user  = req.session.name;
+  const doctor_id = req.session.doctor_id;
   const filePath = `/uploads/videos/${req.file.filename}`;
 
   conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [user, filePath], (err) => {
