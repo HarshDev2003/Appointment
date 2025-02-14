@@ -1,4 +1,4 @@
-console.log("autolink js");
+console.log("voice/autolink js");
 ( function () {
   var autoLink,
     slice = [].slice;

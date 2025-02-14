@@ -653,6 +653,13 @@ app.get('/register-doctor', (req, res) => {
   res.render('dr-register'); // Render the EJS file
 });
 
+app.get('/test', (req, res) => {
+  res.render('voice'); // Render the EJS file
+});
+
+app.get('/v', (req, res) => {
+  res.render('v'); // Render the EJS file
+});
 // const storage = multer.diskStorage({
 //   destination: (req, file, cb) => {
 //     // Ensure uploads directory exists

@@ -1,3 +1,4 @@
+console.log("voice/helper");
 export default {
     
     generateRandomString() {
@@ -159,11 +160,7 @@ export default {
 
         chatMsgDiv.appendChild( rowDiv );
 
-        /**
-         * Move focus to the newly added message but only if:
-         * 1. Page has focus
-         * 2. User has not moved scrollbar upward. This is to prevent moving the scroll position if user is reading previous messages.
-         */
+        
         if ( this.pageHasFocus ) {
             rowDiv.scrollIntoView();
         }
@@ -212,11 +209,11 @@ export default {
     },
 
 
-    maximiseStream( e ) {
-        let elem = e.target.parentElement.previousElementSibling;
+    // maximiseStream( e ) {
+    //     let elem = e.target.parentElement.previousElementSibling;
 
-        elem.requestFullscreen() || elem.mozRequestFullScreen() || elem.webkitRequestFullscreen() || elem.msRequestFullscreen();
-    },
+    //     elem.requestFullscreen() || elem.mozRequestFullScreen() || elem.webkitRequestFullscreen() || elem.msRequestFullscreen();
+    // },
 
 
     singleStreamToggleMute( e ) {
@@ -243,87 +240,87 @@ export default {
     },
 
 
-    toggleModal( id, show ) {
-        let el = document.getElementById( id );
+    // toggleModal( id, show ) {
+    //     let el = document.getElementById( id );
 
-        if ( show ) {
-            el.style.display = 'block';
-            el.removeAttribute( 'aria-hidden' );
-        }
+    //     if ( show ) {
+    //         el.style.display = 'block';
+    //         el.removeAttribute( 'aria-hidden' );
+    //     }
 
-        else {
-            el.style.display = 'none';
-            el.setAttribute( 'aria-hidden', true );
-        }
-    },
-
-
-
-    setLocalStream( stream, mirrorMode = true ) {
-        const localVidElem = document.getElementById( 'local' );
-
-        localVidElem.srcObject = stream;
-        mirrorMode ? localVidElem.classList.add( 'mirror-mode' ) : localVidElem.classList.remove( 'mirror-mode' );
-    },
+    //     else {
+    //         el.style.display = 'none';
+    //         el.setAttribute( 'aria-hidden', true );
+    //     }
+    // },
 
 
-    adjustVideoElemSize() {
-        let elem = document.getElementsByClassName( 'card' );
-        let totalRemoteVideosDesktop = elem.length;
-        let newWidth = totalRemoteVideosDesktop <= 2 ? '50%' : (
-            totalRemoteVideosDesktop == 3 ? '33.33%' : (
-                totalRemoteVideosDesktop <= 8 ? '25%' : (
-                    totalRemoteVideosDesktop <= 15 ? '20%' : (
-                        totalRemoteVideosDesktop <= 18 ? '16%' : (
-                            totalRemoteVideosDesktop <= 23 ? '15%' : (
-                                totalRemoteVideosDesktop <= 32 ? '12%' : '10%'
-                            )
-                        )
-                    )
-                )
-            )
-        );
+
+    // setLocalStream( stream, mirrorMode = true ) {
+    //     const localVidElem = document.getElementById( 'local' );
+
+    //     localVidElem.srcObject = stream;
+    //     mirrorMode ? localVidElem.classList.add( 'mirror-mode' ) : localVidElem.classList.remove( 'mirror-mode' );
+    // },
 
 
-        for ( let i = 0; i < totalRemoteVideosDesktop; i++ ) {
-            elem[i].style.width = newWidth;
-        }
-    },
+    // adjustVideoElemSize() {
+    //     let elem = document.getElementsByClassName( 'card' );
+    //     let totalRemoteVideosDesktop = elem.length;
+    //     let newWidth = totalRemoteVideosDesktop <= 2 ? '50%' : (
+    //         totalRemoteVideosDesktop == 3 ? '33.33%' : (
+    //             totalRemoteVideosDesktop <= 8 ? '25%' : (
+    //                 totalRemoteVideosDesktop <= 15 ? '20%' : (
+    //                     totalRemoteVideosDesktop <= 18 ? '16%' : (
+    //                         totalRemoteVideosDesktop <= 23 ? '15%' : (
+    //                             totalRemoteVideosDesktop <= 32 ? '12%' : '10%'
+    //                         )
+    //                     )
+    //                 )
+    //             )
+    //         )
+    //     );
 
 
-    createDemoRemotes( str, total = 6 ) {
-        let i = 0;
+    //     for ( let i = 0; i < totalRemoteVideosDesktop; i++ ) {
+    //         elem[i].style.width = newWidth;
+    //     }
+    // },
 
-        let testInterval = setInterval( () => {
-            let newVid = document.createElement( 'video' );
-            newVid.id = `demo-${ i }-video`;
-            newVid.srcObject = str;
-            newVid.autoplay = true;
-            newVid.className = 'remote-video';
 
-            //video controls elements
-            let controlDiv = document.createElement( 'div' );
-            controlDiv.className = 'remote-video-controls';
-            controlDiv.innerHTML = `<i class="fa fa-microphone text-white pr-3 mute-remote-mic" title="Mute"></i>
-                <i class="fa fa-expand text-white expand-remote-video" title="Expand"></i>`;
+    // createDemoRemotes( str, total = 6 ) {
+    //     let i = 0;
 
-            //create a new div for card
-            let cardDiv = document.createElement( 'div' );
-            cardDiv.className = 'card card-sm';
-            cardDiv.id = `demo-${ i }`;
-            cardDiv.appendChild( newVid );
-            cardDiv.appendChild( controlDiv );
+    //     let testInterval = setInterval( () => {
+    //         let newVid = document.createElement( 'video' );
+    //         newVid.id = `demo-${ i }-video`;
+    //         newVid.srcObject = str;
+    //         newVid.autoplay = true;
+    //         newVid.className = 'remote-video';
 
-            //put div in main-section elem
-            document.getElementById( 'videos' ).appendChild( cardDiv );
+    //         //video controls elements
+    //         let controlDiv = document.createElement( 'div' );
+    //         controlDiv.className = 'remote-video-controls';
+    //         controlDiv.innerHTML = `<i class="fa fa-microphone text-white pr-3 mute-remote-mic" title="Mute"></i>
+    //             <i class="fa fa-expand text-white expand-remote-video" title="Expand"></i>`;
 
-            this.adjustVideoElemSize();
+    //         //create a new div for card
+    //         let cardDiv = document.createElement( 'div' );
+    //         cardDiv.className = 'card card-sm';
+    //         cardDiv.id = `demo-${ i }`;
+    //         cardDiv.appendChild( newVid );
+    //         cardDiv.appendChild( controlDiv );
 
-            i++;
+    //         //put div in main-section elem
+    //         document.getElementById( 'videos' ).appendChild( cardDiv );
 
-            if ( i == total ) {
-                clearInterval( testInterval );
-            }
-        }, 2000 );
-    }
+    //         this.adjustVideoElemSize();
+
+    //         i++;
+
+    //         if ( i == total ) {
+    //             clearInterval( testInterval );
+    //         }
+    //     }, 2000 );
+    // }
 };
