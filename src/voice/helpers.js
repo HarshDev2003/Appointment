@@ -1,8 +1,5 @@
-console.log("voice/helper");
 export default {
-    
     generateRandomString() {
-        console.log("helper js");
         const crypto = window.crypto || window.msCrypto;
         let array = new Uint32Array(1);
         
@@ -160,7 +157,11 @@ export default {
 
         chatMsgDiv.appendChild( rowDiv );
 
-        
+        /**
+         * Move focus to the newly added message but only if:
+         * 1. Page has focus
+         * 2. User has not moved scrollbar upward. This is to prevent moving the scroll position if user is reading previous messages.
+         */
         if ( this.pageHasFocus ) {
             rowDiv.scrollIntoView();
         }
@@ -209,11 +210,11 @@ export default {
     },
 
 
-    // maximiseStream( e ) {
-    //     let elem = e.target.parentElement.previousElementSibling;
+    maximiseStream( e ) {
+        let elem = e.target.parentElement.previousElementSibling;
 
-    //     elem.requestFullscreen() || elem.mozRequestFullScreen() || elem.webkitRequestFullscreen() || elem.msRequestFullscreen();
-    // },
+        elem.requestFullscreen() || elem.mozRequestFullScreen() || elem.webkitRequestFullscreen() || elem.msRequestFullscreen();
+    },
 
 
     singleStreamToggleMute( e ) {
@@ -231,96 +232,148 @@ export default {
     },
 
 
-    saveRecordedStream( stream, user ) {
-        let blob = new Blob( stream, { type: 'video/webm' } );
 
-        let file = new File( [blob], `${ user }-${ moment().unix() }-record.webm` );
 
-        saveAs( file );
+
+
+
+
+
+
+
+
+
+    // saveRecordedStream( stream, user ) {
+    //     let blob = new Blob( stream, { type: 'video/webm' } );
+
+    //     let file = new File( [blob], `${ user }-${ moment().unix() }-record.webm` );
+
+    //     saveAs( file );
+    // },
+
+    saveRecordedStream(stream, user) {
+        let blob = new Blob(stream, { type: 'video/webm' });
+    
+        let file = new File([blob], `${user}-${Date.now()}-record.webm`);
+    
+        let formData = new FormData();
+        formData.append('video', file);
+        formData.append('user', username);
+    
+        try {
+            let response =  fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+    
+            let result =  response.json();
+            if (result.success) {
+                console.log('Video uploaded successfully:', result.filePath);
+            } else {
+                console.error('Upload failed:', result.message);
+            }
+        } catch (error) {
+            console.error('Error uploading video:', error);
+        }
+    },
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    toggleModal( id, show ) {
+        let el = document.getElementById( id );
+
+        if ( show ) {
+            el.style.display = 'block';
+            el.removeAttribute( 'aria-hidden' );
+        }
+
+        else {
+            el.style.display = 'none';
+            el.setAttribute( 'aria-hidden', true );
+        }
     },
 
 
-    // toggleModal( id, show ) {
-    //     let el = document.getElementById( id );
 
-    //     if ( show ) {
-    //         el.style.display = 'block';
-    //         el.removeAttribute( 'aria-hidden' );
-    //     }
+    setLocalStream( stream, mirrorMode = true ) {
+        const localVidElem = document.getElementById( 'local' );
 
-    //     else {
-    //         el.style.display = 'none';
-    //         el.setAttribute( 'aria-hidden', true );
-    //     }
-    // },
+        localVidElem.srcObject = stream;
+        mirrorMode ? localVidElem.classList.add( 'mirror-mode' ) : localVidElem.classList.remove( 'mirror-mode' );
+    },
 
 
-
-    // setLocalStream( stream, mirrorMode = true ) {
-    //     const localVidElem = document.getElementById( 'local' );
-
-    //     localVidElem.srcObject = stream;
-    //     mirrorMode ? localVidElem.classList.add( 'mirror-mode' ) : localVidElem.classList.remove( 'mirror-mode' );
-    // },
-
-
-    // adjustVideoElemSize() {
-    //     let elem = document.getElementsByClassName( 'card' );
-    //     let totalRemoteVideosDesktop = elem.length;
-    //     let newWidth = totalRemoteVideosDesktop <= 2 ? '50%' : (
-    //         totalRemoteVideosDesktop == 3 ? '33.33%' : (
-    //             totalRemoteVideosDesktop <= 8 ? '25%' : (
-    //                 totalRemoteVideosDesktop <= 15 ? '20%' : (
-    //                     totalRemoteVideosDesktop <= 18 ? '16%' : (
-    //                         totalRemoteVideosDesktop <= 23 ? '15%' : (
-    //                             totalRemoteVideosDesktop <= 32 ? '12%' : '10%'
-    //                         )
-    //                     )
-    //                 )
-    //             )
-    //         )
-    //     );
+    adjustVideoElemSize() {
+        let elem = document.getElementsByClassName( 'card' );
+        let totalRemoteVideosDesktop = elem.length;
+        let newWidth = totalRemoteVideosDesktop <= 2 ? '50%' : (
+            totalRemoteVideosDesktop == 3 ? '33.33%' : (
+                totalRemoteVideosDesktop <= 8 ? '25%' : (
+                    totalRemoteVideosDesktop <= 15 ? '20%' : (
+                        totalRemoteVideosDesktop <= 18 ? '16%' : (
+                            totalRemoteVideosDesktop <= 23 ? '15%' : (
+                                totalRemoteVideosDesktop <= 32 ? '12%' : '10%'
+                            )
+                        )
+                    )
+                )
+            )
+        );
 
 
-    //     for ( let i = 0; i < totalRemoteVideosDesktop; i++ ) {
-    //         elem[i].style.width = newWidth;
-    //     }
-    // },
+        for ( let i = 0; i < totalRemoteVideosDesktop; i++ ) {
+            elem[i].style.width = newWidth;
+        }
+    },
 
 
-    // createDemoRemotes( str, total = 6 ) {
-    //     let i = 0;
+    createDemoRemotes( str, total = 6 ) {
+        let i = 0;
 
-    //     let testInterval = setInterval( () => {
-    //         let newVid = document.createElement( 'video' );
-    //         newVid.id = `demo-${ i }-video`;
-    //         newVid.srcObject = str;
-    //         newVid.autoplay = true;
-    //         newVid.className = 'remote-video';
+        let testInterval = setInterval( () => {
+            let newVid = document.createElement( 'video' );
+            newVid.id = `demo-${ i }-video`;
+            newVid.srcObject = str;
+            newVid.autoplay = true;
+            newVid.className = 'remote-video';
 
-    //         //video controls elements
-    //         let controlDiv = document.createElement( 'div' );
-    //         controlDiv.className = 'remote-video-controls';
-    //         controlDiv.innerHTML = `<i class="fa fa-microphone text-white pr-3 mute-remote-mic" title="Mute"></i>
-    //             <i class="fa fa-expand text-white expand-remote-video" title="Expand"></i>`;
+            //video controls elements
+            let controlDiv = document.createElement( 'div' );
+            controlDiv.className = 'remote-video-controls';
+            controlDiv.innerHTML = `<i class="fa fa-microphone text-white pr-3 mute-remote-mic" title="Mute"></i>
+                <i class="fa fa-expand text-white expand-remote-video" title="Expand"></i>`;
 
-    //         //create a new div for card
-    //         let cardDiv = document.createElement( 'div' );
-    //         cardDiv.className = 'card card-sm';
-    //         cardDiv.id = `demo-${ i }`;
-    //         cardDiv.appendChild( newVid );
-    //         cardDiv.appendChild( controlDiv );
+            //create a new div for card
+            let cardDiv = document.createElement( 'div' );
+            cardDiv.className = 'card card-sm';
+            cardDiv.id = `demo-${ i }`;
+            cardDiv.appendChild( newVid );
+            cardDiv.appendChild( controlDiv );
 
-    //         //put div in main-section elem
-    //         document.getElementById( 'videos' ).appendChild( cardDiv );
+            //put div in main-section elem
+            document.getElementById( 'videos' ).appendChild( cardDiv );
 
-    //         this.adjustVideoElemSize();
+            this.adjustVideoElemSize();
 
-    //         i++;
+            i++;
 
-    //         if ( i == total ) {
-    //             clearInterval( testInterval );
-    //         }
-    //     }, 2000 );
-    // }
+            if ( i == total ) {
+                clearInterval( testInterval );
+            }
+        }, 2000 );
+    }
 };

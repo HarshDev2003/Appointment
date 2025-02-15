@@ -1683,7 +1683,20 @@ app.get('/videos', (req, res) => {
       res.render('videos', { videos: results });
   });
 });
+app.post("/upload-audio", upload.single("audio"), (req, res) => {
+  if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+  }
 
+  const filePath = req.file.path;
+
+  // Save file path to database
+  const sql = "INSERT INTO recordings (file_path) VALUES (?)";
+  db.query(sql, [filePath], (err, result) => {
+      if (err) throw err;
+      res.status(200).json({ message: "Audio uploaded successfully", filePath });
+  });
+});
 
 
 // app.post('/upload', upload1.single('video'), (req, res) => {
@@ -1707,7 +1720,29 @@ app.get('/videos', (req, res) => {
 
 
 // ====================Multer=================================
+app.get("/getUserRole", (req, res) => {
+  if (!req.session || !req.session.id_user) {
+      return res.status(401).json({ message: "Unauthorized" });
+  }
+  
+  
+  const userId = req.session.id_user;
+  console.log("Session Data:", req.session.role);
+  
+  const sql = "SELECT role FROM cn_user WHERE id_user = ?";
+  conn.query(sql, [userId], (err, result) => {
+      if (err) {
+          console.error("Database query error:", err);
+          return res.status(500).json({ error: "Internal Server Error" });
+      }
 
+      if (result.length > 0) {
+          return res.json({ role: result[0].role });
+      } else {
+          return res.status(404).json({ message: "User not found" });
+      }
+  });
+});
 
 
 io.of( '/stream' ).on( 'connection', stream );

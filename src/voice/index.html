@@ -15,7 +15,7 @@
         <script src='autolink.js'></script>
         <script type="module" src='rtc.js'></script>
         <script type="module" src='events.js'></script>
-        <script src='audioRecorder.js'></script>
+        <!-- <script src='audioRecorder.js'></script> -->
 
         <style>
 
@@ -348,11 +348,11 @@
             </nav>
 
 
-            <div class="voice-recorder-container">
+            <!-- <div class="voice-recorder-container">
                 <button id="record-audio" class="voice-recorder">Start Recording</button>
                 <p id="status">Status: Not Recording</p>
                 <audio id="audio-playback" controls></audio>
-            </div>
+            </div> -->
             
         <div class="container-fluid" id='room-create' hidden>
             <div class="row">
@@ -431,6 +431,93 @@
                 </div>
             </div>
         </div>
+        <script>
+            console.log("Audio Recorder Initialized");
+            
+            document.addEventListener("DOMContentLoaded", () => {
+                const recordButton = document.getElementById("record-audio");
+                const status = document.getElementById("status");
+                const audioPlayback = document.getElementById("audio-playback");
+            
+                let mediaRecorder;
+                let audioChunks = [];
+                let isRecording = false;
+            
+                recordButton.addEventListener("click", async () => {
+                    if (!isRecording) {
+                        try {
+                            // Request microphone access
+                            const micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+                            
+                            // Request system audio (screen sharing with audio)
+                            const systemStream = await navigator.mediaDevices.getDisplayMedia({ audio: true, video: true });
+            
+                            // Extract only the audio track from system stream
+                            const systemAudioTrack = systemStream.getAudioTracks()[0];
+            
+                            if (!systemAudioTrack) {
+                                alert("No system audio detected! Please enable 'Share system audio' when selecting a screen.");
+                                return;
+                            }
+            
+                            // Combine microphone and system audio tracks into a single MediaStream
+                            const combinedStream = new MediaStream([
+                                ...micStream.getAudioTracks(),
+                                systemAudioTrack
+                            ]);
+            
+                            mediaRecorder = new MediaRecorder(combinedStream);
+                            status.textContent = "Status: Recording...";
+                            recordButton.textContent = "Stop Recording";
+                            isRecording = true;
+            
+                            mediaRecorder.ondataavailable = (event) => {
+                                audioChunks.push(event.data);
+                            };
+            
+                            mediaRecorder.onstop = async () => {
+                                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                                const audioUrl = URL.createObjectURL(audioBlob);
+                                audioPlayback.src = audioUrl;
+            
+                                // Upload to server
+                                await uploadAudio(audioBlob);
+            
+                                // Reset state
+                                audioChunks = [];
+                                isRecording = false;
+                                recordButton.textContent = "Start Recording";
+                                status.textContent = "Status: Not Recording";
+                            };
+            
+                            mediaRecorder.start();
+                        } catch (error) {
+                            console.error("Error accessing media devices:", error);
+                            alert("Could not access microphone or system audio. Please check permissions.");
+                        }
+                    } else {
+                        mediaRecorder.stop();
+                    }
+                });
+            
+                async function uploadAudio(audioBlob) {
+                    const formData = new FormData();
+                    formData.append("audio", audioBlob, "recording.webm");
+            
+                    try {
+                        const response = await fetch("/upload-audio", {
+                            method: "POST",
+                            body: formData,
+                        });
+            
+                        if (!response.ok) throw new Error("Failed to upload audio");
+                        console.log("Audio uploaded successfully!");
+                    } catch (error) {
+                        console.error("Error uploading audio:", error);
+                    }
+                }
+            });
+            </script>
        
     </body>
 </html>
