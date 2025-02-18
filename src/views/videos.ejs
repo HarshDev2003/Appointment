@@ -23,14 +23,18 @@
             width: 100%;
             border-radius: 10px;
         }
+
+        
     </style>
 </head>
 <body>
-    <h2>Recorede Videos and Audio</h2>
+    <h2>Recorded Videos and Audio</h2>
+    <button onclick="window.history.back()">Back</button>
+
     <div class="video-container">
         <% videos.forEach(video => { %>
             <div class="video-box">
-                <h4><%= video.user %></h4>
+                <h4><%= video.user %> to <%= video.patient %> </h4>
                 <video controls>
                     <source src="<%= video.file_path %>" type="video/webm">
                     Your browser does not support the video tag.

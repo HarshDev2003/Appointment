@@ -101,7 +101,8 @@ const conn = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  multipleStatements: true
+  multipleStatements: true,
+  port: 3306
 });
 
 conn.connect(function(error){
@@ -1671,10 +1672,22 @@ app.post('/upload', upload.single('video'), (req, res) => {
       res.json({ success: true, filePath });
   });
 });
+
+
+
+
+
 app.get('/videos', (req, res) => {
-  const sql = 'SELECT * FROM videos ORDER BY uploaded_at DESC';
-  
-  conn.query(sql, (err, results) => {
+  if ( !req.session.name) {
+    return res.status(401).send('You must be logged in to view videos.');
+  }
+console.log(req.session.name)
+console.log(req.session.username)
+console.log(req.session.id_user)
+  const user = req.session.name  // Assuming the user object is stored in session
+  const sql = 'SELECT * FROM videos WHERE user = ? ORDER BY uploaded_at DESC';
+
+  conn.query(sql, [user], (err, results) => {
       if (err) {
           console.error('Database error:', err);
           return res.status(500).send('Database error');
@@ -1683,20 +1696,37 @@ app.get('/videos', (req, res) => {
       res.render('videos', { videos: results });
   });
 });
-app.post("/upload-audio", upload.single("audio"), (req, res) => {
-  if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-  }
 
-  const filePath = req.file.path;
 
-  // Save file path to database
-  const sql = "INSERT INTO recordings (file_path) VALUES (?)";
-  db.query(sql, [filePath], (err, result) => {
-      if (err) throw err;
-      res.status(200).json({ message: "Audio uploaded successfully", filePath });
-  });
-});
+// app.get('/videos', (req, res) => {
+//   const sql = 'SELECT * FROM videos WHERE user = ? ORDER BY uploaded_at DESC';
+
+  
+//   conn.query(sql, (err, results) => {
+//       if (err) {
+//           console.error('Database error:', err);
+//           return res.status(500).send('Database error');
+//       }
+
+//       res.render('videos', { videos: results });
+//   });
+// });
+
+
+// app.post("/upload-audio", upload.single("audio"), (req, res) => {
+//   if (!req.file) {
+//       return res.status(400).json({ message: "No file uploaded" });
+//   }
+
+//   const filePath = req.file.path;
+
+//   // Save file path to database
+//   const sql = "INSERT INTO recordings (file_path) VALUES (?)";
+//   conn.query(sql, [filePath], (err, result) => {
+//       if (err) throw err;
+//       res.status(200).json({ message: "Audio uploaded successfully", filePath });
+//   });
+// });
 
 
 // app.post('/upload', upload1.single('video'), (req, res) => {
@@ -1720,6 +1750,31 @@ app.post("/upload-audio", upload.single("audio"), (req, res) => {
 
 
 // ====================Multer=================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.get("/getUserRole", (req, res) => {
   if (!req.session || !req.session.id_user) {
       return res.status(401).json({ message: "Unauthorized" });
