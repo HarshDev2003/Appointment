@@ -172,6 +172,9 @@
   </style>
 </head>
 <body>
+
+
+
   <div class="container mt-5">
     <!-- <h2>Booking Form </h2> -->
     <div style="display: flex; align-items: center; gap: 10px;">
@@ -206,24 +209,27 @@
     
       <div class="mb-3">
         <div class="form-group">
-        <label for="doctor_id" class="form-label">Select Doctor:</label>
+          <label for="doctor_id" class="form-label">Select Doctor:</label>
+        </div>
+        <select id="doctor_id" name="doctor_id" class="form-control" onchange="updateDoctorName(); this.form.submit();" required>
+          <% doctors.forEach(doctor => { %>
+            <option value="<%= doctor.id_user %>" <%= doctor_id == doctor.id_user ? 'selected' : '' %>>
+              <%= doctor.name %>
+            </option>
+          <% }); %>
+        </select>
       </div>
-      <select id="doctor_id" name="doctor_id" class="form-control" onchange="this.form.submit()" required>
-        <% doctors.forEach(doctor => { %>
-          <option value="<%= doctor.id %>" <%= doctor_id == doctor.id ? 'selected' : '' %>>
-            <%= doctor.doctor_name %>
-          </option>
-        <% }); %>
-      </select>
-      
+    
+      <div class="mb-3">
+        <label for="selected_doctor_name" class="form-label">Selected Doctor Name:</label>
+        <input type="text" id="selectedDoctorName" class="form-control" value="" readonly>
       </div>
+    
       <div class="mb-3">
         <label for="selected_doctor_id" class="form-label">Doctor ID:</label>
         <input type="text" id="selectedDoctorID" class="form-control" value="<%= doctor_id %>" readonly>
       </div>
     </form>
-    
-    
 
 
 
@@ -609,6 +615,17 @@ function updateDoctorID() {
     let doctorIDInput = document.getElementById('selectedDoctorID');
     doctorIDInput.value = doctorSelect.value; // Updates the Doctor ID field dynamically
   }
+  function updateDoctorName() {
+    var doctorDropdown = document.getElementById("doctor_id");
+    var selectedDoctorName = doctorDropdown.options[doctorDropdown.selectedIndex].text;
+    document.getElementById("selectedDoctorName").value = selectedDoctorName;
+  }
+
+  // Set the selected doctor's name on page load
+  window.onload = function () {
+    updateDoctorName();
+  };
+  
 
   </script>
 </body>

@@ -176,6 +176,7 @@ app.get('/home/pdf', async (req, res) => {
     const doctorId = parseInt(req.params.id, 10); // Ensure doctorId is a number
     const selectedDate = req.query.date || new Date().toISOString().split('T')[0];
     const doctor_id = req.query.doctor_id;
+    const userName = req.session.name;
     // const { date, doctor_id } = req.query;
     // const selectedDate = req.query.date || "";
     // const doctor_id = req.query.doctor_id || "";
@@ -188,7 +189,7 @@ app.get('/home/pdf', async (req, res) => {
     console.log("Selected Doctor ID:", doctor_id);
     // Queries
     const bookedSlotsQuery = `SELECT time FROM bookings WHERE date = ? AND doctor_id = ?`;
-    const doctorQuery = `SELECT id, doctor_name FROM doctor_table`;
+    const doctorQuery = `SELECT id_user, name FROM cn_user WHERE role = 'Doctor'`;
     const userQuery = `
       SELECT name, email, phone, address, age, sex
       FROM cn_user 
@@ -238,6 +239,40 @@ app.get('/home/pdf', async (req, res) => {
   }
 });
 
+app.get("/past-appointment", (req, res) => {
+  if (!req.session.name) {
+      return res.redirect("/"); // Redirect if user is not logged in
+  }
+
+  const userName = req.session.name;
+  const query = `
+      SELECT id, name, sex, age, address, email, phone, date, time, doctor_id, created_at 
+      FROM bookings 
+      WHERE name = ?
+  `;
+
+  conn.query(query, [userName], (err, results) => {
+      if (err) {
+          console.error("Error fetching appointments:", err);
+          return res.status(500).send("Database error");
+      }
+      const formattedAppointments = results.map(appointment => ({
+        ...appointment,
+        date: new Date(appointment.date).toLocaleDateString("en-US", { 
+            year: "numeric", month: "short", day: "numeric" 
+        }), 
+        time: new Date(`2024-01-01 ${appointment.time}`).toLocaleTimeString("en-US", { 
+          hour: "2-digit", minute: "2-digit", hour12: true 
+      }),
+        created_at: new Date(appointment.created_at).toLocaleString("en-US", { 
+            year: "numeric", month: "short", day: "numeric", 
+            hour: "2-digit", minute: "2-digit", hour12: true 
+        }) 
+    }));
+
+      res.render("past-appointment",  { userName, appointments: formattedAppointments });
+  });
+});
 
 // app.get('/home/pdf/:id', (req, res) => {
 //   // Check if the user is logged in
@@ -422,7 +457,9 @@ app.post('/submit-booking', (req, res) => {
 });
 
 
-
+app.get("/success", (req, res) => {
+  res.render("success"); // Ensure success.ejs exists in the views folder
+});
 
 
 // app.post('/submit-booking', (req, res) => {

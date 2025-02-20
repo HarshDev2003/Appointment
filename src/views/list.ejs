@@ -90,6 +90,9 @@ li{
             <li class="nav-item">
               <a class="nav-link" id="booking" onclick="redirectToBookingPage()" role="tab">My Bookings</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" id="booking" onclick="pastappointment()" role="tab"> Booking History</a>
+        </li>
         
           
             <!-- <li class="nav-item">
@@ -463,6 +466,9 @@ li{
 
     // Redirect to the target page with the query string
     window.location.href = `/home/pdf`;
+}
+function pastappointment() {
+  window.location.href = `/past-appointment`;
 }
 
 
