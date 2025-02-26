@@ -183,15 +183,18 @@ function toggleShareBox() {
             document.getElementById("shareForm").addEventListener("submit", async function(event) {
     event.preventDefault();
     
-    let email = document.querySelector('input[name="email"]').value;
+    let emailInput = document.querySelector('input[name="email"]');
+    let email = emailInput.value;
+    let submitButton = document.querySelector('button[type="submit"]');
 
     if (!email) {
         alert("Please enter an email.");
         return;
     }
 
-    let formData = new FormData();
-    formData.append("email", email);
+    // Disable button and show loading state
+    submitButton.disabled = true;
+    submitButton.innerHTML = "Sending... ⏳";
 
     try {
         let response = await fetch('/send-email', {
@@ -214,6 +217,10 @@ function toggleShareBox() {
     } catch (error) {
         console.error("Error:", error);
         alert("❌ Failed to send email.");
+    } finally {
+        // Reset button after request completes
+        submitButton.disabled = false;
+        submitButton.innerHTML = "Send Email";
     }
 });
 
