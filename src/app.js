@@ -49,7 +49,8 @@ app.use('/img', express.static(__dirname + '/img')); // redirect to img
 app.use('/images', express.static(__dirname + '/public/images')); // redirect to img
 // app.use('/images', express.static('__dirname + '/public/images'));;
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
-app.use('/uploads', express.static('uploads')); // Serve uploaded files
+app.use('/uploads', express.static('./uploads')); 
+// app.use('/videos', express.static(path.resolve(__dirname, 'uploads/videos')));
 
 
 app.use(flash());
@@ -76,7 +77,7 @@ app.use(bodyParser.json());
 
 // Set up storage for Multer
 const storage = multer.diskStorage({
-  destination: 'uploads/videos/',
+  destination: '/uploads/videos/',
   filename: (req, file, cb) => {
       cb(null, `${Date.now()}-${file.originalname}`);
   }
@@ -1072,53 +1073,54 @@ app.get('/v', (req, res) => {
       console.log('Connected : %s ', array.length)
     })
   
-    // send message
-    socket.on('send_message', function(data) {
-      let explode = data.group.split('_');
-      let time = now__();
-      conn.query(
-      `INSERT INTO cn_chat (message, id_group_chat, user_id, time_chat, who) VALUES
-      ('${htmlspecialchars(data.message)}', '${data.group}', ${data.id_me}, '${time}', '${explode[0]}'),
-      ('${htmlspecialchars(data.message)}', '${data.group}', ${data.id_me}, '${time}', '${explode[1]}')`,
-        (error, results) => {
-          console.log(error);
-          console.log(results);
-          if (results != undefined) {
-            if (results.affectedRows) {
-  
-              io.sockets.emit(`new_message_${data.group}`, {
-                msg: he.decode(data.message),
-                sender: data.username,
-                time: time,
-                img: ''
-              });
-  
-              io.sockets.emit(`notification_${data.receiver}`, {
-                msg: he.decode(data.message),
-                sender: data.username,
-                receiver: data.receiver,
-                time: time,
-                id_receiver: data.id_me,
-                name:data.name,
-                img_profile: data.img_profile
-              });
-              // console.log('data receiver '+data.receiver);
-            }else {
-              io.sockets.emit(`new_message_${data.group}`, {
-                msg: '~',
-                sender: '~'
-              });
-            }
+  // send message
+  socket.on('send_message', function(data) {
+    let explode = data.group.split('_');
+    let time = now__();
+    conn.query(
+    `INSERT INTO cn_chat (message, id_group_chat, user_id, time_chat, who) VALUES
+    ('${htmlspecialchars(data.message)}', '${data.group}', ${data.id_me}, '${time}', '${explode[0]}'),
+    ('${htmlspecialchars(data.message)}', '${data.group}', ${data.id_me}, '${time}', '${explode[1]}')`,
+   
+      (error, results) => {
+        console.log(error);
+        console.log(results);
+        if (results != undefined) {
+          if (results.affectedRows) {
+
+            io.sockets.emit(`new_message_${data.group}`, {
+              msg: he.decode(data.message),
+              sender: data.username,
+              time: time,
+              img: ''
+            });
+
+            io.sockets.emit(`notification_${data.receiver}`, {
+              msg: he.decode(data.message),
+              sender: data.username,
+              receiver: data.receiver,
+              time: time,
+              id_receiver: data.id_me,
+              name:data.name,
+              img_profile: data.img_profile
+            });
+            // console.log('data receiver '+data.receiver);
           }else {
             io.sockets.emit(`new_message_${data.group}`, {
-              msg: '~*',
-              sender: '~*'
+              msg: '~',
+              sender: '~'
             });
           }
-  
+        }else {
+          io.sockets.emit(`new_message_${data.group}`, {
+            msg: '~*',
+            sender: '~*'
+          });
         }
-      )
-    });
+
+      }
+    )
+  });
 })
 
 //========================================== Major All codes are here ======================================
@@ -1835,6 +1837,41 @@ app.get("/getUserRole", (req, res) => {
       }
   });
 });
+
+
+
+
+app.post("/send-email", async (req, res) => {
+  const { email } = req.body;
+  const currentURL = req.get("Referer") || "No referrer";
+  console.log(currentURL);
+
+  const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+          user: 'harshdew0207@gmail.com',
+          pass: 'nhzy ebkg dbks cvjd'
+      }
+  });
+
+  const mailOptions = {
+      from: 'harshdew0207@gmail.com',
+      to: email,
+      subject: 'Meeting URL',
+      html: `<p>Hello,</p><p>Link to join your meeting is: <a href="${currentURL}">${currentURL}</a></p>`
+  };
+
+  transporter.sendMail(mailOptions, (emailErr, info) => {
+      if (emailErr) {
+          console.error('Error sending email:', emailErr);
+          return res.status(500).json({ error: 'Failed to send email' });
+      }
+
+      console.log('Email sent:', info.response);
+      res.json({ message: 'Email sent successfully' });
+  });
+});
+
 
 
 io.of( '/stream' ).on( 'connection', stream );
