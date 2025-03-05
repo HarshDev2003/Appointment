@@ -2,6 +2,8 @@ node_modules
 node modules
 cn_chat.sql
 cn_chat
+env
+.env
 gitignore
 .gitignore
 uploads

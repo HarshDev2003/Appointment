@@ -49,7 +49,7 @@ app.use('/img', express.static(__dirname + '/img')); // redirect to img
 app.use('/images', express.static(__dirname + '/public/images')); // redirect to img
 // app.use('/images', express.static('__dirname + '/public/images'));;
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
-app.use('/uploads', express.static('./uploads')); 
+app.use('/uploads', express.static('/uploads')); 
 // app.use('/videos', express.static(path.resolve(__dirname, 'uploads/videos')));
 
 
@@ -77,17 +77,40 @@ app.use(bodyParser.json());
 
 // Set up storage for Multer
 const storage = multer.diskStorage({
-  destination: '/uploads/videos/',
+  destination: (req, file, cb) => {
+      cb(null, '/uploads/');
+  },
   filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`);
+      cb(null, Date.now() + '-' + file.originalname);
   }
 });
+const upload = multer({ storage: storage });
 
-const upload = multer({ storage });
-
-
-
-
+// ✅ Ensure 'uploads/videos' folder exists before saving files
+// const uploadDir = path.resolve(__dirname, './uploads/videos');
+// if (!fs.existsSync(uploadDir)) {
+//   fs.mkdirSync(uploadDir, { recursive: true });
+// } 
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, uploadDir);
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, `${Date.now()}-${file.originalname}`);
+//   }
+// });
+// app.use('/videos', express.static(uploadDir));
+// const upload = multer({ 
+//   storage,
+//   limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit
+//   fileFilter: (req, file, cb) => {
+//     const allowedTypes = ['video/mp4', 'video/mkv', 'video/webm'];
+//     if (!allowedTypes.includes(file.mimetype)) {
+//       return cb(new Error('Only MP4, MKV, and WEBM files are allowed'), false);
+//     }
+//     cb(null, true);
+//   }
+// });
 
 
 
@@ -1698,17 +1721,20 @@ app.post('/update_profile', async (req, res) => {
 
 
 
-
 app.post('/upload', upload.single('video'), (req, res) => {
+  console.log('File:', req.file);
   if (!req.file) return res.json({ success: false, message: 'No file uploaded' });
 
-  const  user  = req.session.name;
-  const doctor_id = req.session.doctor_id;
-  const filePath = `/uploads/videos/${req.file.filename}`;
+  console.log('User:', req.session.name);
+  console.log('Doctor ID:', req.session.doctor_id);
 
-  conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [user, filePath], (err) => {
-      if (err) return res.json({ success: false, message: 'Database error' });
-      res.json({ success: true, filePath });
+  const filePath = `/uploads/${req.file.filename}`;
+  conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [req.session.name, filePath], (err) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.json({ success: false, message: 'Database error' });
+    }
+    res.json({ success: true, filePath });
   });
 });
 
@@ -1716,25 +1742,88 @@ app.post('/upload', upload.single('video'), (req, res) => {
 
 
 
+// app.get('/videos', (req, res) => {
+//   if ( !req.session.name) {
+//     return res.status(401).send('You must be logged in to view videos.');
+//   }
+// console.log(req.session.name)
+// console.log(req.session.username)
+// console.log(req.session.id_user)
+//   const user = req.session.name  // Assuming the user object is stored in session
+//   const sql = 'SELECT * FROM videos WHERE user = ? ORDER BY uploaded_at DESC';
+
+//   conn.query(sql, [user], (err, results) => {
+//       if (err) {
+//           console.error('Database error:', err);
+//           return res.status(500).send('Database error');
+//       }
+
+//       res.render('videos', { videos: results });
+//   });
+// });
+
+
+
+
+// ✅ Upload Endpoint (Production Ready)
+// app.post('/upload', upload.single('video'), (req, res) => {
+//   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+
+//   if (!req.session?.name) {
+//     return res.status(401).json({ success: false, message: 'Unauthorized' });
+//   }
+
+//   const user = req.session.name;
+//   const doctor_id = req.session.doctor_id || null; // Optional if not used
+//   const filePath = `/videos/${req.file.filename}`; // Use correct path
+
+//   const sql = 'INSERT INTO videos (user, doctor_id, file_path) VALUES (?, ?, ?)';
+//   conn.query(sql, [user, doctor_id, filePath], (err) => {
+//     if (err) {
+//       console.error('Database error:', err);
+//       return res.status(500).json({ success: false, message: 'Database error' });
+//     }
+//     res.json({ success: true, filePath });
+//   });
+// });
+
+// ✅ Video Fetch Endpoint (Production Ready)
 app.get('/videos', (req, res) => {
-  if ( !req.session.name) {
+  if (!req.session.name) {
     return res.status(401).send('You must be logged in to view videos.');
   }
-console.log(req.session.name)
-console.log(req.session.username)
-console.log(req.session.id_user)
-  const user = req.session.name  // Assuming the user object is stored in session
+
+  console.log(req.session.name, req.session.username, req.session.id_user);
+
+  const user = req.session.name;
   const sql = 'SELECT * FROM videos WHERE user = ? ORDER BY uploaded_at DESC';
 
   conn.query(sql, [user], (err, results) => {
-      if (err) {
-          console.error('Database error:', err);
-          return res.status(500).send('Database error');
-      }
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).send('Database error');
+    }
 
-      res.render('videos', { videos: results });
+    res.render('videos', { videos: results });
   });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // app.get('/videos', (req, res) => {
