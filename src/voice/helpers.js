@@ -240,7 +240,74 @@ export default {
 
 
 
-
+    // saveRecordedStream(user) {
+    //     let videoElements = document.querySelectorAll("video"); // Get all video elements
+    //     let streams = [];
+    
+    //     // Collect streams from all video elements
+    //     videoElements.forEach(video => {
+    //         if (video.srcObject) {
+    //             streams.push(video.srcObject);
+    //         }
+    //     });
+    
+    //     if (streams.length === 0) {
+    //         console.error("No video streams found to record.");
+    //         return;
+    //     }
+    
+    //     // Create a new MediaStream from all video tracks
+    //     let combinedStream = new MediaStream();
+    //     streams.forEach(stream => {
+    //         stream.getTracks().forEach(track => {
+    //             combinedStream.addTrack(track);
+    //         });
+    //     });
+    
+    //     // Record the combined stream
+    //     let mediaRecorder = new MediaRecorder(combinedStream, { mimeType: "video/webm" });
+    //     let recordedChunks = [];
+    
+    //     mediaRecorder.ondataavailable = event => {
+    //         if (event.data.size > 0) {
+    //             recordedChunks.push(event.data);
+    //         }
+    //     };
+    
+    //     mediaRecorder.onstop = async () => {
+    //         let blob = new Blob(recordedChunks, { type: "video/webm" });
+    //         let file = new File([blob], `${user}-${Date.now()}-record.webm`);
+    
+    //         let formData = new FormData();
+    //         formData.append("video", file);
+    //         formData.append("user", user);
+    
+    //         try {
+    //             let response = await fetch("/upload", {
+    //                 method: "POST",
+    //                 body: formData
+    //             });
+    
+    //             let result = await response.json();
+    //             if (result.success) {
+    //                 console.log("Video uploaded successfully:", result.filePath);
+    //             } else {
+    //                 console.error("Upload failed:", result.message);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error uploading video:", error);
+    //         }
+    //     };
+    
+    //     // Start recording
+    //     mediaRecorder.start();
+    
+    //     // Stop recording after a specific duration (e.g., 10 seconds)
+    //     setTimeout(() => {
+    //         mediaRecorder.stop();
+    //     }, 10000);
+    // },
+    
 
 
     // saveRecordedStream( stream, user ) {
@@ -280,7 +347,74 @@ export default {
         }
     },
     
-
+    saveRecordedStream(user) {
+        let videoElements = document.querySelectorAll("video"); // Get all video elements
+        let streams = [];
+    
+        videoElements.forEach(video => {
+            if (video.srcObject && !video.classList.contains("local-video")) { 
+                // Exclude local video (assuming it has the class "local-video")
+                streams.push(video.srcObject);
+            }
+        });
+    
+        if (streams.length === 0) {
+            console.error("No remote video streams found to record.");
+            return;
+        }
+    
+        // Create a new MediaStream to merge all remote video tracks
+        let combinedStream = new MediaStream();
+        streams.forEach(stream => {
+            stream.getTracks().forEach(track => {
+                combinedStream.addTrack(track);
+            });
+        });
+    
+        // Record the remote video streams
+        let mediaRecorder = new MediaRecorder(combinedStream, { mimeType: "video/webm" });
+        let recordedChunks = [];
+    
+        mediaRecorder.ondataavailable = event => {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+    
+        mediaRecorder.onstop = async () => {
+            let blob = new Blob(recordedChunks, { type: "video/webm" });
+            let file = new File([blob], `${user}-${Date.now()}-remote-record.webm`);
+    
+            let formData = new FormData();
+            formData.append("video", file);
+            formData.append("user", user);
+    
+            try {
+                let response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
+    
+                let result = await response.json();
+                if (result.success) {
+                    console.log("Remote video uploaded successfully:", result.filePath);
+                } else {
+                    console.error("Upload failed:", result.message);
+                }
+            } catch (error) {
+                console.error("Error uploading remote video:", error);
+            }
+        };
+    
+        // Start recording
+        mediaRecorder.start();
+    
+        // Stop recording after a specific duration (e.g., 10 seconds)
+        setTimeout(() => {
+            mediaRecorder.stop();
+        }, 10000);
+    },
+    
 
 
 
