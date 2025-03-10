@@ -74,43 +74,25 @@ app.use(bodyParser.json());
 
 
 
-
-// Set up storage for Multer
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-      cb(null, '/uploads/');
-  },
+  destination: '/uploads/',
+
   filename: (req, file, cb) => {
-      cb(null, Date.now() + '-' + file.originalname);
+      cb(null, `${Date.now() }+ - ${file.originalname}`);
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({  storage });
 
-// ✅ Ensure 'uploads/videos' folder exists before saving files
-// const uploadDir = path.resolve(__dirname, './uploads/videos');
-// if (!fs.existsSync(uploadDir)) {
-//   fs.mkdirSync(uploadDir, { recursive: true });
-// } 
+// Set up storage for Multer
 // const storage = multer.diskStorage({
 //   destination: (req, file, cb) => {
-//     cb(null, uploadDir);
+//       cb(null, '/uploads/');
 //   },
 //   filename: (req, file, cb) => {
-//     cb(null, `${Date.now()}-${file.originalname}`);
+//       cb(null, Date.now() + '-' + file.originalname);
 //   }
 // });
-// app.use('/videos', express.static(uploadDir));
-// const upload = multer({ 
-//   storage,
-//   limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit
-//   fileFilter: (req, file, cb) => {
-//     const allowedTypes = ['video/mp4', 'video/mkv', 'video/webm'];
-//     if (!allowedTypes.includes(file.mimetype)) {
-//       return cb(new Error('Only MP4, MKV, and WEBM files are allowed'), false);
-//     }
-//     cb(null, true);
-//   }
-// });
+// const upload = multer({ storage: storage });
 
 
 
@@ -1156,7 +1138,7 @@ let otpCode = null; // Temporary storage for OTP
 // Endpoint to request an OTP
 app.post('/request-otp', (req, res) => {
   otpCode = Math.floor(100000 + Math.random() * 900000).toString(); // Generate 6-digit OTP
-  
+  console.log(otpCode);
   client.messages
     .create({
       body: `Your OTP code is ${otpCode}`,

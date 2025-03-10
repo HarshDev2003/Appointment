@@ -220,15 +220,16 @@
         </select>
       </div>
     
-      <div class="mb-3">
+      <div class="mb-3" style = "display:none">
         <label for="selected_doctor_name" class="form-label">Selected Doctor Name:</label>
         <input type="text" id="selectedDoctorName" class="form-control" value="" readonly>
       </div>
     
-      <div class="mb-3">
+      <div style="display: none;">
         <label for="selected_doctor_id" class="form-label">Doctor ID:</label>
         <input type="text" id="selectedDoctorID" class="form-control" value="<%= doctor_id %>" readonly>
       </div>
+      
     </form>
 
 
@@ -304,8 +305,8 @@
 
       <input type="hidden" id="date" name="date" value="<%= selectedDate %>">
       <div class="mb-3">
-        <label for="selected_doctor_id" class="form-label">Doctor ID:</label>
-        <input type="text" id="selectedDoctorID" class="form-control" value="<%= doctor_id %>" readonly>
+        <label for="selected_doctor_id" style="display: none;" class="form-label">Doctor ID:</label>
+        <input type="text" id="selectedDoctorID"  style="display: none;" class="form-control" value="<%= doctor_id %>" readonly>
       </div>
       <!-- <input type="hidden" id="selectedDoctorID" name="doctor_id"> -->
    

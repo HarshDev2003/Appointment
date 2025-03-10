@@ -109,11 +109,11 @@
 <body>
    
     <h2>Welcome, <%= userName %>!</h2>
-    <h3>Your Past Booked Appointments</h3>
+    <h3>Your Booked Appointments</h3>
     <button onclick="window.location.href = '/list'" style="padding: 5px 10px; background-color: #ddd; color: #333; border: none; border-radius: 5px; cursor: pointer;">
         ← Back
       </button>
-    <a href="/home/pdf" class="appointment-link">Book your Appointment</a>
+    <a href="/home/pdf" class="appointment-link">Book your Next Appointment</a>
 
     <% if (appointments.length > 0) { %>
         <div class="table-container">
