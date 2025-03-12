@@ -1442,11 +1442,22 @@ app.get('/api/doctors', async (req, res) => {
 
 
 
-app.get('/api/patients', async (req, res) => {
-  const sql = 'SELECT id_user, name FROM cn_user';  // Adjust table name and columns
+// app.get('/api/patients', async (req, res) => {
+//   const sql = 'SELECT id_user, name FROM cn_user WHERE role = "User"';  // Adjust table name and columns
+//   conn.query(sql, (err, results) => {
+//     if (err) throw err;
+//     res.json(results);  // Send results as JSON
+//   });
+// });
+app.get('/api/patients', (req, res) => {
+  const sql = 'SELECT  name, sex, age, address, phone FROM cn_user WHERE role = "User"';
+
   conn.query(sql, (err, results) => {
-    if (err) throw err;
-    res.json(results);  // Send results as JSON
+    if (err) {
+      console.error('Error fetching patients:', err);
+      return res.status(500).json({ error: 'Database query failed' });
+    }
+    res.json(results); // Send results as JSON
   });
 });
 
