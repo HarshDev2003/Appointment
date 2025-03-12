@@ -164,7 +164,7 @@ app.get('/home/pdf/:id/list', (req, res) => {
     );
 
   } else {
-    res.redirect('/');
+    res.redirect('/log');
   }
   
 });
@@ -175,7 +175,7 @@ app.get('/home/pdf', async (req, res) => {
     // Check if the user is logged in
     if (!req.session.loggedin) {
       req.flash('login', 'Please log in to access this page');
-      return res.redirect('/');
+      return res.redirect('/log');
     }
 
     // Extract parameters and query values
@@ -521,7 +521,7 @@ function now__() {
     return time
   }
   
-  app.get('/', function(req, res) {
+  app.get('/log', function(req, res) {
       let flash_data = req.flash('login');
       let flash_ = '';
       if (flash_data != '') {
@@ -602,7 +602,7 @@ function now__() {
             });
         });
     } else {
-      res.redirect('/'); // Redirect to login if not logged in
+      res.redirect('/log'); // Redirect to login if not logged in
     }
   });
   
@@ -672,7 +672,7 @@ function now__() {
         });
 
     } else {
-      res.redirect('/'); // Redirect to login if user is not logged in
+      res.redirect('/log'); // Redirect to login if user is not logged in
     }
   });
   
@@ -783,7 +783,7 @@ app.get('/v', (req, res) => {
           return res.status(500).json({ success: false, message: 'Server error' });
         }
         req.flash('login', 'Successfully added account, please login...');
-                res.redirect('/');
+                res.redirect('/log');
         // req.flash('login', 'Successfully added account, please login...');
         // res.json({ success: true, message: 'Registration successful' });
       }
@@ -809,7 +809,7 @@ app.get('/v', (req, res) => {
           res.redirect('/list');
         } else {
                   req.flash('login', 'Wrong Password or Username!');
-          res.redirect('/');
+          res.redirect('/log');
         }
       }
     );
@@ -1257,6 +1257,18 @@ console.log(doctorId);
 
 
 // Route to render the homepage
+app.get('/', (req, res) => {
+  const query = 'SELECT * FROM doctor_table';
+  conn.query(query, (err, results) => {
+      if (err) {
+          console.error('Error fetching doctor list:', err);
+          return res.status(500).send('Internal Server Error');
+      }
+      res.render('homepage', { cards: results });
+  });
+});
+
+
 app.get('/home', (req, res) => {
   const query = 'SELECT * FROM doctor_table';
   conn.query(query, (err, results) => {
@@ -1307,12 +1319,6 @@ app.post('/book-appointment', (req, res) => {
 
 
 
-
-// Search functionality route (dummy example)
-app.get('/home-search', (req, res) => {
-  const query = req.query.query;
-  res.send(`You searched for: ${query}`);
-});
 
 
 
@@ -1467,9 +1473,14 @@ app.use( '/assets', express.static( path.join( __dirname, 'assets' ) ) );
 
 
 
-app.get( '/home', ( req, res ) => {
-    res.sendFile( __dirname + '/home.html' );
-} );
+// app.get( '/', ( req, res ) => {
+//     res.sendFile( __dirname + '/home.html' );
+// } );
+
+// app.get( '/home', ( req, res ) => {
+//   res.sendFile( __dirname + '/home.html' );
+// } );
+
 app.get( '/chat', ( req, res ) => {
     res.sendFile( __dirname + '/chat.html' );
 } );
@@ -1507,7 +1518,7 @@ app.post('/newuser-signup', async (req, res) => {
       return res.status(500).send('An error occurred while registering the user.');
     }
     console.log('User registered successfully:', result);
-    res.redirect('/'); // Redirect to the login page after successful registration
+    res.redirect('/log'); // Redirect to the login page after successful registration
   });
 });
 

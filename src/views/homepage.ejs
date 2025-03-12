@@ -16,19 +16,274 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="../assets/css/homepage.css">
 </head>
+<style>
+  /* How It Works Section */
+.how-it-works {
+  background-color: #f9f9f9;
+}
+
+.step {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.step:hover {
+  transform: translateY(-5px);
+}
+
+.step-icon {
+  width: 50px;
+  height: 50px;
+  background: #28a745;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 50px;
+  text-align: center;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.step h5 {
+  color: #333;
+}
+
+.step p {
+  font-size: 14px;
+  color: #666;
+}
+
+
+/* Consultation Fees Section */
+.consultation-fees {
+  background: #f8f9fa;
+}
+
+.fee-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.fee-card:hover {
+  transform: translateY(-5px);
+}
+
+.fee-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.fee-card h5 {
+  color: #28a745;
+}
+
+.fee-card p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Latest Insights Section */
+.latest-insights {
+  background: #f8f9fa;
+}
+
+.insight-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.insight-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.insight-card h4 {
+  font-size: 20px;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+.insight-card p {
+  font-size: 14px;
+  color: #666;
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #007bff;
+  text-decoration: none;
+  position: relative;
+}
+
+.read-more::after {
+  content: "";
+  display: block;
+  width: 0%;
+  height: 2px;
+  background: #007bff;
+  transition: width 0.3s ease-in-out;
+}
+
+.read-more:hover::after {
+  width: 100%;
+}
+
+/* Ready to Start Section */
+.ready-to-start {
+  background: linear-gradient(to right, #28a745, #20c997);
+  color: #fff;
+  padding: 60px 20px;
+  text-align: center;
+  border-radius: 12px;
+  margin: 40px auto;
+  max-width: 800px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease-in-out;
+}
+
+.ready-to-start:hover {
+  transform: scale(1.02);
+}
+
+.ready-to-start h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.ready-to-start p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.btn-primary,
+.btn-secondary {
+  display: inline-block;
+  padding: 12px 25px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s ease-in-out;
+  font-size: 16px;
+}
+
+.btn-primary {
+  background: #fff;
+  color: #28a745;
+}
+
+.btn-primary:hover {
+  background: #f8f9fa;
+  box-shadow: 0 5px 10px rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 2px solid white;
+}
+
+.btn-secondary:hover {
+  background: #fff;
+  color: #28a745;
+}
+
+/* Why Choose HealthyMind Section */
+.why-choose {
+  background: #f8f9fa;
+  padding: 60px 20px;
+}
+
+.why-choose h2 {
+  font-size: 32px;
+  color: #28a745;
+}
+
+.why-choose .highlight {
+  color: #20c997;
+}
+
+.choose-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  animation: fadeInUp 0.8s ease-in-out;
+}
+
+.choose-card img {
+    width: 150px;  /* Adjust size as needed */
+    height: 150px; /* Ensure uniform height */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image fills the circle */
+    border: 4px solid #fff; /* Optional: Adds a white border */
+    display: block;
+    margin: 0 auto 15px; /* Centers image */
+}
+
+
+.choose-card h4 {
+  font-size: 20px;
+  color: #28a745;
+  margin-bottom: 10px;
+}
+
+.choose-card p {
+  font-size: 14px;
+  color: #666;
+}
+
+.choose-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
 <body>
   <!-- Navbar -->
   <header>
     <nav class="navbar navbar-expand-lg bg-success navbar-dark py-3">
       <div class="container">
-        <a class="navbar-brand fw-bold" href="/">Medi<span class="text-warning">Connect</span></a>
+        <a class="navbar-brand fw-bold" href="/">Healthy<span class="text-warning">Mind</span></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="/doctors">Find a Doctor</a></li>
+            <li class="nav-item"><a class="nav-link" href="/#our-doctors">Find a Doctor</a></li>
             <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
             <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
             <li class="nav-item">
@@ -40,32 +295,99 @@
     </nav>
   </header>
 
-  <!-- Hero Section -->
-  <section class="hero bg-light py-5">
-    <div class="container">
-      <div class="row align-items-center text-center text-lg-start">
-        <div class="col-lg-6 mb-4 mb-lg-0">
-          <h1 class="fw-bold mb-3">Find the Best Doctors <br> and Book Appointments Easily</h1>
-          <p>Book appointments with top-rated doctors in your area and online.</p>
-          <form action="/home-search" method="GET" class="d-flex mt-3">
-            <input type="text" class="form-control me-2" name="query" placeholder="Search for doctors, clinics, or specialties">
-            <button type="submit" class="btn btn-success">Search</button>
-          </form>
-        </div>
-        <div class="col-lg-6">
-            <img src="../img/9432548.jpg" alt="Doctor Illustration" class="img-fluid rounded shadow">
-          </div>
-          
+<!-- Hero Section -->
+<section class="hero bg-light py-5">
+  <div class="container">
+    <div class="row align-items-center text-center text-lg-start">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <h1 class="fw-bold mb-3">Welcome to HealthyMind Psychology & Psychiatry Consultancy</h1>
+        <p class="lead"><b>Your journey to mental wellness starts here.</b></p>
+        <ul class="list-unstyled">
+          <li>✅<b> Connect with licensed psychologists and psychiatrists via video call, audio call, or chat. </b></li>
+          <li>✅<b> Book appointments easily and access support whenever you need.</b></li>
+        </ul>
+      </div>
+      <div class="col-lg-6">
+        <img src="../img/9432548.jpg" alt="Doctor Illustration" class="img-fluid rounded shadow">
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
 
+
+
+<!-- Additional Sections for Medical Website -->
+<!-- Why Choose Us Section -->
+<!-- Why Choose Us Section -->
+<!-- <section class="why-choose-us bg-light py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-4 text-primary">Why Choose Healthy Mind?</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card p-4 border rounded shadow-sm text-center">
+          <img src="../img/Doctor2.jpg" alt="Trusted Doctors" class="img-fluid mb-3 rounded-circle" width="120">
+          <h4 class="fw-bold text-secondary">Expert Professionals </h4>
+          <p class="text-muted">Our team consists of highly qualified and compassionate psychologists and psychiatrists dedicated
+            to your mental health. Whether you need therapy or medicaƟon management, we’re here to help.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card p-4 border rounded shadow-sm text-center">
+          <img src="../img/Communication-1.jpg" alt="Easy Booking" class="img-fluid mb-3 rounded-circle" width="150" height="150">
+          <h4 class="fw-bold text-secondary">Flexible Communication</h4>
+          <p class="text-muted">Choose the mode of Consultant that suits you best—video, audio, or chat</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card p-4 border rounded shadow-sm text-center">
+          <img src="../img/Secure.jpg" alt="Secure Platform" class="img-fluid mb-3 rounded-circle" width="120">
+          <h4 class="fw-bold text-secondary">Secure and Confidential</h4>
+          <p class="text-muted">Your privacy is our priority. All sessions are encrypted and confidenƟal. We adhere to strict data
+            protecƟon protocols to ensure your personal and medical information is safeguarded at all times.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+
+<!-- Why Choose HealthyMind Section -->
+<section class="why-choose py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-4">Why Choose <span class="highlight">HealthyMind?</span></h2>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="choose-card">
+          <img src="../img/Doctor2.jpg" alt="Expert Professionals">
+          <h4>Expert Professionals</h4>
+          <p>Highly qualified psychologists & psychiatrists dedicated to your mental well-being.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="choose-card">
+          <img src="../img/Communication-1.jpg" alt="Flexible Communication">
+          <h4>Flexible Communication</h4>
+          <p>Choose video, audio, or chat—whatever suits your needs best.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="choose-card">
+          <img src="../img/Secure.jpg" alt="Secure and Confidential">
+          <h4>Secure & Confidential</h4>
+          <p>All sessions are encrypted, ensuring your data is protected at all times.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 
 <!-- Image Card Slider -->
 <!-- Image Card Slider -->
 <!-- Image Card Slider -->
+<h2 id="our-doctors"><center>Our Doctors</center></h2>
 <div class="slide-container swiper">
   <div class="slide-content">
       <div class="card-wrapper swiper-wrapper">
@@ -96,40 +418,107 @@
 </div>
 
 
-<!-- Additional Sections for Medical Website -->
-<!-- Why Choose Us Section -->
-<!-- Why Choose Us Section -->
-<section class="why-choose-us bg-light py-5">
-  <div class="container text-center">
-    <h2 class="fw-bold mb-4 text-primary">Why Choose MediConnect?</h2>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="feature-card p-4 border rounded shadow-sm text-center">
-          <img src="https://picsum.photos/120" alt="Trusted Doctors" class="img-fluid mb-3 rounded-circle" width="120">
-          <h4 class="fw-bold text-secondary">Trusted Doctors</h4>
-          <p class="text-muted">We partner with only the best and most trusted medical professionals.</p>
+
+
+<!-- How It Works Section -->
+<section class="how-it-works py-5 bg-white">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-4">How It Works</h2>
+    <div class="row">
+      <div class="col-lg-3 col-md-6 text-center">
+        <div class="step">
+          <div class="step-icon">1</div>
+          <h5 class="fw-bold mt-3">Search for a Psychologist or Psychiatrist</h5>
+          <p>Find the right specialist for your needs—whether you’re looking for therapy, counseling, or psychiatric care.</p>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="feature-card p-4 border rounded shadow-sm text-center">
-          <img src="https://picsum.photos/120" alt="Easy Booking" class="img-fluid mb-3 rounded-circle" width="120">
-          <h4 class="fw-bold text-secondary">Easy Booking</h4>
-          <p class="text-muted">Book appointments seamlessly in just a few clicks.</p>
+      <div class="col-lg-3 col-md-6 text-center">
+        <div class="step">
+          <div class="step-icon">2</div>
+          <h5 class="fw-bold mt-3">Book an Appointment</h5>
+          <p>Schedule a session at your convenience.</p>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="feature-card p-4 border rounded shadow-sm text-center">
-          <img src="https://picsum.photos/120" alt="Secure Platform" class="img-fluid mb-3 rounded-circle" width="120">
-          <h4 class="fw-bold text-secondary">Secure Platform</h4>
-          <p class="text-muted">Your data is safe and secure with us at all times.</p>
+      <div class="col-lg-3 col-md-6 text-center">
+        <div class="step">
+          <div class="step-icon">3</div>
+          <h5 class="fw-bold mt-3">Pay Consultation Fee</h5>
+          <p>To confirm your appointment, the consultation fee must be paid online in advance. We accept secure payments via credit/debit cards, UPI, and other trusted payment gateways.</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 text-center">
+        <div class="step">
+          <div class="step-icon">4</div>
+          <h5 class="fw-bold mt-3">Start Your Session</h5>
+          <p>Connect via video, audio, or chat from the comfort of your home.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
+
+
+
+<!-- Consultation Fees Section -->
+<section class="consultation-fees py-5">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-4">Consultation Fees</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <div class="fee-card">
+          <div class="fee-icon">💰</div>
+          <h5 class="fw-bold">Transparent Pricing</h5>
+          <p>Our consultation fees are clearly listed on each professional’s profile, so you know the cost upfront.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="fee-card">
+          <div class="fee-icon">💳</div>
+          <h5 class="fw-bold">Advance Payment</h5>
+          <p>To secure your appointment, the consultation fee must be paid online in advance.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="fee-card">
+          <div class="fee-icon">🔄</div>
+          <h5 class="fw-bold">Refund Policy</h5>
+          <p>If you need to cancel or reschedule, please notify us at least 24 hours in advance for a full refund.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Latest Insights Section -->
+<section class="latest-insights py-5">
+  <div class="container">
+    <h2 class="fw-bold text-center mb-4">Latest Insights</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        <div class="insight-card">
+          <h4>5 Tips for Maintaining Mental Health</h4>
+          <p>Discover practical advice to enhance your well-being.</p>
+          <a href="#" class="read-more">Read More →</a>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="insight-card">
+          <h4>The Importance of Regular Mental Health Check-ups</h4>
+          <p>Learn why consistent mental health evaluations are crucial.</p>
+          <a href="#" class="read-more">Read More →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
 <!-- Blog Section -->
-<section class="blog py-5 bg-light">
+<!-- <section class="blog py-5 bg-light">
   <div class="container">
     <h2 class="fw-bold text-center mb-4 text-primary">Latest Blogs</h2>
     <div class="row g-4">
@@ -165,11 +554,11 @@
       </div>
     </div>
   </div>
-</section>
+</section> -->
 
 
   <!-- Features Section -->
-  <section class="features py-5 bg-white">
+  <!-- <section class="features py-5 bg-white">
     <div class="container">
       <div class="row g-4 text-center">
         <div class="col-md-4">
@@ -201,7 +590,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
 <!-- FAQs Section -->
 <section class="faqs py-5 bg-white">
   <div class="container">
@@ -215,19 +604,79 @@
         </h2>
         <div id="faq1" class="accordion-collapse collapse show">
           <div class="accordion-body">
-            You can book an appointment by searching for a doctor and clicking on "Book Appointment."
+            You can book an appointment by selecting a psychologist or psychiatrist and choosing your preferred consultation mode.
           </div>
         </div>
       </div>
       <div class="accordion-item">
         <h2 class="accordion-header">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-            Are online consultations secure?
+            Are consultations confidential?
           </button>
         </h2>
         <div id="faq2" class="accordion-collapse collapse">
           <div class="accordion-body">
-            Yes, we use end-to-end encryption to ensure all consultations are private and secure.
+            Yes, all consultations are private and secure. We use end-to-end encryption to protect your data and ensure your sessions remain confidential.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+            What if I need urgent support?
+          </button>
+        </h2>
+        <div id="faq3" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            We offer 24/7 access to ensure you can reach out whenever you need help.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+            How is my personal information protected?
+          </button>
+        </h2>
+        <div id="faq4" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            We follow stringent privacy policies and comply with data protection regulations (e.g., GDPR, HIPAA) to ensure your personal and medical information is secure. Your data is never shared with third parties without your explicit consent.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+            What’s the difference between a psychologist and a psychiatrist?
+          </button>
+        </h2>
+        <div id="faq5" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            Psychologists focus on therapy and counseling to help you manage emotional and mental challenges. Psychiatrists are medical doctors who can prescribe medication and provide therapy for more complex mental health conditions.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+            How do I pay for my consultation?
+          </button>
+        </h2>
+        <div id="faq6" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            The consultation fee must be paid online in advance through our secure payment gateway. We accept credit/debit cards, UPI, and other trusted payment methods.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
+            What is your refund policy?
+          </button>
+        </h2>
+        <div id="faq7" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            If you need to cancel or reschedule, please notify us at least 24 hours in advance for a full refund. Late cancellations may not be eligible for a refund.
           </div>
         </div>
       </div>
@@ -236,10 +685,23 @@
 </section>
 
 
+<!-- Ready to Start Section -->
+<section class="ready-to-start">
+  <div class="container text-center">
+    <h2 class="fw-bold">Ready to Start?</h2>
+    <p class="lead">Begin your journey to better mental health today.</p>
+    <div class="btn-container">
+      <a href="#our-doctors" class="btn-primary">Find a Specialist</a>
+      <a href="/list" class="btn-secondary">Book an Appointment</a>
+    </div>
+  </div>
+</section>
+
+
   <!-- Footer -->
   <footer class="bg-success text-white text-center py-3">
     <div class="container">
-      <p class="mb-0">&copy; <%= new Date().getFullYear() %> MediConnect. All rights reserved.</p>
+      <p class="mb-0">&copy; <%= new Date().getFullYear() %> HealthyMind. All rights reserved.</p>
     </div>
   </footer>
 
