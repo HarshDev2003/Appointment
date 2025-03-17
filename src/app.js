@@ -51,7 +51,13 @@ app.use('/images', express.static(__dirname + '/public/images')); // redirect to
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 app.use('/uploads', express.static('/uploads')); 
 // app.use('/videos', express.static(path.resolve(__dirname, 'uploads/videos')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// const fs = require('fs');
+const uploadDir = path.join(__dirname, 'uploads', 'videos');
 
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 app.use(flash());
 app.use(express.static('public'));
@@ -74,28 +80,27 @@ app.use(bodyParser.json());
 
 
 
-const storage = multer.diskStorage({
-  destination: '/uploads/',
-
-  filename: (req, file, cb) => {
-      cb(null, `${Date.now() }+ - ${file.originalname}`);
-  }
-});
-const upload = multer({  storage });
-
-// Set up storage for Multer
 // const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//       cb(null, '/uploads/');
-//   },
+//   destination: './uploads/videos/',
+
 //   filename: (req, file, cb) => {
-//       cb(null, Date.now() + '-' + file.originalname);
+//       cb(null, `${Date.now()}-${file.originalname}`);
 //   }
 // });
-// const upload = multer({ storage: storage });
+// const upload = multer({ storage });
 
 
 
+
+// Set up storage for Multer
+const storage = multer.diskStorage({
+  destination: '/uploads/videos/',
+  filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const upload = multer({ storage });
 
 
 
@@ -1724,7 +1729,6 @@ app.post('/update_profile', async (req, res) => {
 });
 
 
-
 app.post('/upload', upload.single('video'), (req, res) => {
   console.log('File:', req.file);
   if (!req.file) return res.json({ success: false, message: 'No file uploaded' });
@@ -1732,7 +1736,7 @@ app.post('/upload', upload.single('video'), (req, res) => {
   console.log('User:', req.session.name);
   console.log('Doctor ID:', req.session.doctor_id);
 
-  const filePath = `/uploads/${req.file.filename}`;
+  const filePath = `/uploads/videos/${req.file.filename}`;
   conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [req.session.name, filePath], (err) => {
     if (err) {
       console.error('Database error:', err);
@@ -1741,6 +1745,29 @@ app.post('/upload', upload.single('video'), (req, res) => {
     res.json({ success: true, filePath });
   });
 });
+
+
+
+// app.post('/upload', upload.single('video'), (req, res) => {
+//   console.log('File:', req.file);
+//   if (!req.file) return res.json({ success: false, message: 'No file uploaded' });
+//    console.log("No file Uploaded")
+
+//   console.log('User:', req.session.name);
+//   console.log('Doctor ID:', req.session.doctor_id);
+
+//   const filePath = `uploads/videos/${req.file.filename}`;
+
+//   // const filePath = `./uploads/${req.file.filename}`;
+//   conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [req.session.name, filePath], (err) => {
+//     if (err) {
+//       console.error('Database error:', err);
+//       return res.json({ success: false, message: 'Database error' });
+//     }
+//     res.json({ success: true, filePath });
+//     console.log("Uploaded Successfully");
+//   });
+// });
 
 
 

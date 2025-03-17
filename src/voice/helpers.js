@@ -320,7 +320,45 @@ export default {
 
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     saveRecordedStream(stream, user) {
         let blob = new Blob(stream, { type: 'video/webm' });
     
@@ -347,73 +385,105 @@ export default {
         }
     },
     
-    saveRecordedStream(user) {
-        let videoElements = document.querySelectorAll("video"); // Get all video elements
-        let streams = [];
+
+
+
+
+
     
-        videoElements.forEach(video => {
-            if (video.srcObject && !video.classList.contains("local-video")) { 
-                // Exclude local video (assuming it has the class "local-video")
-                streams.push(video.srcObject);
-            }
-        });
+    // saveRecordedStream(stream, user) {
+    //     let blob = new Blob(stream, { type: 'video/webm' });
     
-        if (streams.length === 0) {
-            console.error("No remote video streams found to record.");
-            return;
-        }
+    //     let file = new File([blob], `${user}-${Date.now()}-record.webm`);
     
-        // Create a new MediaStream to merge all remote video tracks
-        let combinedStream = new MediaStream();
-        streams.forEach(stream => {
-            stream.getTracks().forEach(track => {
-                combinedStream.addTrack(track);
-            });
-        });
+    //     let formData = new FormData();
+    //     formData.append('video', file);
+    //     formData.append('user', username);
     
-        // Record the remote video streams
-        let mediaRecorder = new MediaRecorder(combinedStream, { mimeType: "video/webm" });
-        let recordedChunks = [];
+    //     try {
+    //         let response =  fetch('/upload', {
+    //             method: 'POST',
+    //             body: formData
+    //         });
     
-        mediaRecorder.ondataavailable = event => {
-            if (event.data.size > 0) {
-                recordedChunks.push(event.data);
-            }
-        };
+    //         let result =  response.json();
+    //         if (result.success) {
+    //             console.log('Video uploaded successfully:', result.filePath);
+    //         } else {
+    //             console.error('Upload failed:', result.message);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error uploading video:', error);
+    //     }
+    // },
     
-        mediaRecorder.onstop = async () => {
-            let blob = new Blob(recordedChunks, { type: "video/webm" });
-            let file = new File([blob], `${user}-${Date.now()}-remote-record.webm`);
+    // saveRecordedStream(user) {
+    //     let videoElements = document.querySelectorAll("video"); // Get all video elements
+    //     let streams = [];
     
-            let formData = new FormData();
-            formData.append("video", file);
-            formData.append("user", user);
+    //     videoElements.forEach(video => {
+    //         if (video.srcObject && !video.classList.contains("local-video")) { 
+    //             // Exclude local video (assuming it has the class "local-video")
+    //             streams.push(video.srcObject);
+    //         }
+    //     });
     
-            try {
-                let response = await fetch("/upload", {
-                    method: "POST",
-                    body: formData
-                });
+    //     if (streams.length === 0) {
+    //         console.error("No remote video streams found to record.");
+    //         return;
+    //     }
     
-                let result = await response.json();
-                if (result.success) {
-                    console.log("Remote video uploaded successfully:", result.filePath);
-                } else {
-                    console.error("Upload failed:", result.message);
-                }
-            } catch (error) {
-                console.error("Error uploading remote video:", error);
-            }
-        };
+    //     // Create a new MediaStream to merge all remote video tracks
+    //     let combinedStream = new MediaStream();
+    //     streams.forEach(stream => {
+    //         stream.getTracks().forEach(track => {
+    //             combinedStream.addTrack(track);
+    //         });
+    //     });
     
-        // Start recording
-        mediaRecorder.start();
+    //     // Record the remote video streams
+    //     let mediaRecorder = new MediaRecorder(combinedStream, { mimeType: "video/webm" });
+    //     let recordedChunks = [];
     
-        // Stop recording after a specific duration (e.g., 10 seconds)
-        setTimeout(() => {
-            mediaRecorder.stop();
-        }, 10000);
-    },
+    //     mediaRecorder.ondataavailable = event => {
+    //         if (event.data.size > 0) {
+    //             recordedChunks.push(event.data);
+    //         }
+    //     };
+    
+    //     mediaRecorder.onstop = async () => {
+    //         let blob = new Blob(recordedChunks, { type: "video/webm" });
+    //         let file = new File([blob], `${user}-${Date.now()}-remote-record.webm`);
+    
+    //         let formData = new FormData();
+    //         formData.append("video", file);
+    //         formData.append("user", user);
+    
+    //         try {
+    //             let response = await fetch("/upload", {
+    //                 method: "POST",
+    //                 body: formData
+    //             });
+    
+    //             let result = await response.json();
+    //             if (result.success) {
+    //                 console.log("Remote video uploaded successfully:", result.filePath);
+    //             } else {
+    //                 console.error("Upload failed:", result.message);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error uploading remote video:", error);
+    //         }
+    //     };
+    
+    //     // Start recording
+    //     mediaRecorder.start();
+    
+    //     // Stop recording after a specific duration (e.g., 10 seconds)
+    //     setTimeout(() => {
+    //         mediaRecorder.stop();
+    //     }, 10000);
+    // },
     
 
 
