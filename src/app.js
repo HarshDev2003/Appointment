@@ -51,19 +51,11 @@ app.use('/images', express.static(__dirname + '/public/images')); // redirect to
 app.use('/images', express.static(path.join(__dirname, 'public/images')));
 app.use('/uploads', express.static('/uploads')); 
 // app.use('/videos', express.static(path.resolve(__dirname, 'uploads/videos')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // const fs = require('fs');
-const uploadDir = path.join(__dirname, 'uploads', 'videos');
+// const uploadDir = path.join(__dirname, 'uploads', 'videos');
 
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
 
-app.use(flash());
-app.use(express.static('public'));
-app.use(express.urlencoded({
-  extended: false
-}));
 
 // Set up session middleware
 app.use(session({

@@ -9,3 +9,7 @@ gitignore
 uploads
 videos
 
+uploads
+videos
+.uploads
+.videos
