@@ -56,6 +56,11 @@ app.use('/uploads', express.static('/uploads'));
 // const uploadDir = path.join(__dirname, 'uploads', 'videos');
 
 
+app.use(flash());
+app.use(express.static('public'));
+app.use(express.urlencoded({
+  extended: false
+}));
 
 // Set up session middleware
 app.use(session({
