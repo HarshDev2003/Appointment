@@ -125,8 +125,123 @@ conn.connect(function(error){
 
 
 
+// ==========================Multer==================================
+
+app.post('/upload', upload.single('video'), (req, res) => {
+  console.log('File:', req.file);
+  if (!req.file) return res.json({ success: false, message: 'No file uploaded' });
+
+  console.log('User:', req.session.name);
+  console.log('Doctor ID:', req.session.doctor_id);
+
+  const filePath = `/uploads/videos/${req.file.filename}`;
+  conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [req.session.name, filePath], (err) => {
+    console.log(filePath)
+    if (err) {
+      console.error('Database error:', err);
+      return res.json({ success: false, message: 'Database error' });
+    }
+    res.json({ success: true, filePath });
+  });
+});
 
 
+
+// app.post('/upload', upload.single('video'), (req, res) => {
+//   console.log('File:', req.file);
+//   if (!req.file) return res.json({ success: false, message: 'No file uploaded' });
+//    console.log("No file Uploaded")
+
+//   console.log('User:', req.session.name);
+//   console.log('Doctor ID:', req.session.doctor_id);
+
+//   const filePath = `uploads/videos/${req.file.filename}`;
+
+//   // const filePath = `./uploads/${req.file.filename}`;
+//   conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [req.session.name, filePath], (err) => {
+//     if (err) {
+//       console.error('Database error:', err);
+//       return res.json({ success: false, message: 'Database error' });
+//     }
+//     res.json({ success: true, filePath });
+//     console.log("Uploaded Successfully");
+//   });
+// });
+
+
+
+
+
+app.get('/videos', (req, res) => {
+  if ( !req.session.name) {
+    return res.status(401).send('You must be logged in to view videos.');
+  }
+console.log(req.session.name)
+console.log(req.session.username)
+console.log(req.session.id_user)
+  const user = req.session.name  // Assuming the user object is stored in session
+  const sql = 'SELECT * FROM videos WHERE user = ? ORDER BY uploaded_at DESC';
+
+  conn.query(sql, [user], (err, results) => {
+      if (err) {
+          console.error('Database error:', err);
+          return res.status(500).send('Database error');
+      }
+
+      res.render('videos', { videos: results });
+  });
+});
+
+
+
+
+// ✅ Upload Endpoint (Production Ready)
+// app.post('/upload', upload.single('video'), (req, res) => {
+//   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+
+//   if (!req.session?.name) {
+//     return res.status(401).json({ success: false, message: 'Unauthorized' });
+//   }
+
+//   const user = req.session.name;
+//   const doctor_id = req.session.doctor_id || null; // Optional if not used
+//   const filePath = `/videos/${req.file.filename}`; // Use correct path
+
+//   const sql = 'INSERT INTO videos (user, doctor_id, file_path) VALUES (?, ?, ?)';
+//   conn.query(sql, [user, doctor_id, filePath], (err) => {
+//     if (err) {
+//       console.error('Database error:', err);
+//       return res.status(500).json({ success: false, message: 'Database error' });
+//     }
+//     res.json({ success: true, filePath });
+//   });
+// });
+
+
+
+// ✅ Video Fetch Endpoint (Production Ready)
+// app.get('/videos', (req, res) => {
+//   if (!req.session.name) {
+//     return res.status(401).send('You must be logged in to view videos.');
+//   }
+
+//   console.log(req.session.name, req.session.username, req.session.id_user);
+
+//   const user = req.session.name;
+//   const sql = 'SELECT * FROM videos WHERE user = ? ORDER BY uploaded_at DESC';
+
+//   conn.query(sql, [user], (err, results) => {
+//     if (err) {
+//       console.error('Database error:', err);
+//       return res.status(500).send('Database error');
+//     }
+
+//     res.render('videos', { videos: results });
+//   });
+// });
+
+
+// ========================Multer==================
 
 
 
@@ -1724,121 +1839,6 @@ app.post('/update_profile', async (req, res) => {
     res.json({ success: false, error: 'Database update failed' });
   }
 });
-
-
-app.post('/upload', upload.single('video'), (req, res) => {
-  console.log('File:', req.file);
-  if (!req.file) return res.json({ success: false, message: 'No file uploaded' });
-
-  console.log('User:', req.session.name);
-  console.log('Doctor ID:', req.session.doctor_id);
-
-  const filePath = `/uploads/videos/${req.file.filename}`;
-  conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [req.session.name, filePath], (err) => {
-    console.log(filePath)
-    if (err) {
-      console.error('Database error:', err);
-      return res.json({ success: false, message: 'Database error' });
-    }
-    res.json({ success: true, filePath });
-  });
-});
-
-
-
-// app.post('/upload', upload.single('video'), (req, res) => {
-//   console.log('File:', req.file);
-//   if (!req.file) return res.json({ success: false, message: 'No file uploaded' });
-//    console.log("No file Uploaded")
-
-//   console.log('User:', req.session.name);
-//   console.log('Doctor ID:', req.session.doctor_id);
-
-//   const filePath = `uploads/videos/${req.file.filename}`;
-
-//   // const filePath = `./uploads/${req.file.filename}`;
-//   conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [req.session.name, filePath], (err) => {
-//     if (err) {
-//       console.error('Database error:', err);
-//       return res.json({ success: false, message: 'Database error' });
-//     }
-//     res.json({ success: true, filePath });
-//     console.log("Uploaded Successfully");
-//   });
-// });
-
-
-
-
-
-// app.get('/videos', (req, res) => {
-//   if ( !req.session.name) {
-//     return res.status(401).send('You must be logged in to view videos.');
-//   }
-// console.log(req.session.name)
-// console.log(req.session.username)
-// console.log(req.session.id_user)
-//   const user = req.session.name  // Assuming the user object is stored in session
-//   const sql = 'SELECT * FROM videos WHERE user = ? ORDER BY uploaded_at DESC';
-
-//   conn.query(sql, [user], (err, results) => {
-//       if (err) {
-//           console.error('Database error:', err);
-//           return res.status(500).send('Database error');
-//       }
-
-//       res.render('videos', { videos: results });
-//   });
-// });
-
-
-
-
-// ✅ Upload Endpoint (Production Ready)
-// app.post('/upload', upload.single('video'), (req, res) => {
-//   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-
-//   if (!req.session?.name) {
-//     return res.status(401).json({ success: false, message: 'Unauthorized' });
-//   }
-
-//   const user = req.session.name;
-//   const doctor_id = req.session.doctor_id || null; // Optional if not used
-//   const filePath = `/videos/${req.file.filename}`; // Use correct path
-
-//   const sql = 'INSERT INTO videos (user, doctor_id, file_path) VALUES (?, ?, ?)';
-//   conn.query(sql, [user, doctor_id, filePath], (err) => {
-//     if (err) {
-//       console.error('Database error:', err);
-//       return res.status(500).json({ success: false, message: 'Database error' });
-//     }
-//     res.json({ success: true, filePath });
-//   });
-// });
-
-
-
-// ✅ Video Fetch Endpoint (Production Ready)
-app.get('/videos', (req, res) => {
-  if (!req.session.name) {
-    return res.status(401).send('You must be logged in to view videos.');
-  }
-
-  console.log(req.session.name, req.session.username, req.session.id_user);
-
-  const user = req.session.name;
-  const sql = 'SELECT * FROM videos WHERE user = ? ORDER BY uploaded_at DESC';
-
-  conn.query(sql, [user], (err, results) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).send('Database error');
-    }
-
-    res.render('videos', { videos: results });
-  });
-});
-
 
 
 
