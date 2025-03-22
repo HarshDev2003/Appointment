@@ -1735,6 +1735,7 @@ app.post('/upload', upload.single('video'), (req, res) => {
 
   const filePath = `/uploads/videos/${req.file.filename}`;
   conn.query('INSERT INTO videos (user, file_path) VALUES (?, ?)', [req.session.name, filePath], (err) => {
+    console.log(filePath)
     if (err) {
       console.error('Database error:', err);
       return res.json({ success: false, message: 'Database error' });
@@ -1814,6 +1815,8 @@ app.post('/upload', upload.single('video'), (req, res) => {
 //     res.json({ success: true, filePath });
 //   });
 // });
+
+
 
 // ✅ Video Fetch Endpoint (Production Ready)
 app.get('/videos', (req, res) => {
